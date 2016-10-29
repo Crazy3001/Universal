@@ -35,19 +35,20 @@ local minLevel = 1
 	
 --Choose how many pokemon you want to level.--
 --The pokemon in the first X slots will be sorted in order by lowest level to highest and levelled--
-local numberPokemonUsed = 5
+--Whatever number you put in, when that pokemons health gets below healthToRunAt, it will run and use pokecenter.--
+local numberPokemonUsed = 6
 
 --True = Sorts your Pokemon that are being used by level, low to high.
 local sortTeam = true
 
---If set true, if you have Leftovers, it will automatically put it on your lead Pokemon.--
+--If set true, if you have Leftovers, it will automatically give it to your first usable pokemon.--
 local useLeftovers = true
 
 --the below is case-sensitive, add more moves by adding commas. ex : movesNotToForget = {"Move 1", "Move 2", "Move 3"}--
 --Leave an empty "" here if you aren't using it--
 local movesNotToForget = {"Dig", "Cut", "Surf", "Flash", "Rock Smash", "Dive"}
 
---The percentage of your last alive poke's health that we'll stop fighting at and go to pokecenter--
+--The percentage of your last alive usable poke's health that we'll stop fighting at and go to pokecenter--
 local healthToRunAt = 30 
 
 --Hunting in Grass or Water (Both False if using rectangle coordinates)--
@@ -56,7 +57,7 @@ local lookForWater = false
 
 --If in a cave or other location where pokemon encounter anywhere, set up your rect coordinates.--
 local caveGround = false
-local caveRectangle = {56,14,61,14}
+local caveRectangle = {1,2,3,4}
 
 --If you want to fish, set fishing to true, put in the type of rod you want to use, and put in your X and Y Coordinates.--
 local fishing = false
@@ -181,7 +182,7 @@ end
 
 function getFirstUsablePokemon()
 	for i=1, getTeamSize(), 1 do
-		if isPokemonUsable(i) then
+		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
 			return i
 		end
 	end
@@ -201,7 +202,8 @@ end
 function sendUsablePokemonAboveLevel()
 	for i=1, numberPokemonUsed, 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
-			return i
+			sendPokemon(i)
+			return
 		end
 	end
 	return 0
@@ -241,7 +243,7 @@ function leftovers()
 				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
 				return true
 			else
-				return false-- don't have leftovers in bag and is not on pokemons
+				return false
 			end
 		end
 	else
@@ -281,7 +283,7 @@ canNotSwitch = false
 		end
 	end
 	
-	if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(getTotalUsablePokemonCount()) >= healthToRunAt then	
+	if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(numberPokemonUsed) >= healthToRunAt then	
 		if getMapName() == location then
 			if lookForGrass then
 				if moveToGrass() then return end
@@ -316,10 +318,10 @@ function onBattleAction()
         end
 		if isWildBattle() and not isOnList(evadeThesePokemon) then
 			if isPokemonUsable(getActivePokemonNumber()) then
-				if getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
+				if getPokemonHealthPercent(numberPokemonUsed) < healthToRunAt then
 					return run()
 				elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
-					return sendPokemon(sendUsablePokemonAboveLevel()) or run()
+					return sendUsablePokemonAboveLevel() or run()
 				elseif failedRun then
 					failedRun = false
 					return sendUsablePokemon() or attack()
@@ -327,7 +329,7 @@ function onBattleAction()
 					return attack() or sendUsablePokemon() or run()
 				end
 			else
-				return sendUsablePokemon() or run()
+				return sendUsablePokemonAboveLevel() or run()
 			end
 		else
 			run()
