@@ -14,7 +14,7 @@ local autoEvolve = "off"
 
 --Case Sensitive--
 --Put the name of the map you want to train at between "". {Example: location = "Route 121"}
-local location = "Mt. Silver Exterior"		
+local location = ""		
 
 --Will catch any Pokemon that is not registered as owned in your Pokedex.
 local catchNotCaught = false
@@ -31,11 +31,11 @@ local evadeThesePokemon = {""}
 local levelPokesTo = 100
 
 --What level you want your pokemon to start fight instead of switching out.
-local minLevel = 43
+local minLevel = 1
 	
 --Choose how many pokemon you want to level.--
 --The pokemon in the first X slots will be sorted in order by lowest level to highest and levelled--
-local numberPokemonUsed = 5
+local numberPokemonUsed = 6
 
 --True = Sorts your Pokemon that are being used by level, low to high.
 local sortTeam = true
@@ -56,7 +56,7 @@ local lookForWater = false
 
 --If in a cave or other location where pokemon encounter anywhere, set up your rect coordinates.--
 local caveGround = false
-local caveRectangle = {56,14,61,14}
+local caveRectangle = {1,2,3,4}
 
 --If you want to fish, set fishing to true, put in the type of rod you want to use, and put in your X and Y Coordinates.--
 local fishing = false
