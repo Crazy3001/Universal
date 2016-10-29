@@ -35,7 +35,7 @@ local minLevel = 1
 	
 --Choose how many pokemon you want to level.--
 --The pokemon in the first X slots will be sorted in order by lowest level to highest and levelled--
-local numberPokemonUsed = 6
+local numberPokemonUsed = 5
 
 --True = Sorts your Pokemon that are being used by level, low to high.
 local sortTeam = true
@@ -56,7 +56,7 @@ local lookForWater = false
 
 --If in a cave or other location where pokemon encounter anywhere, set up your rect coordinates.--
 local caveGround = false
-local caveRectangle = {1,2,3,4}
+local caveRectangle = {56,14,61,14}
 
 --If you want to fish, set fishing to true, put in the type of rod you want to use, and put in your X and Y Coordinates.--
 local fishing = false
@@ -198,6 +198,14 @@ function getTotalUsablePokemonCount()
 	return count
 end
 
+function sendUsablePokemonAboveLevel()
+	for i=1, numberPokemonUsed, 1 do
+		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
+			return i
+		end
+	end
+	return 0
+end
 function isUsable(Index)
 	if getPokemonHealth(Index) > 1 and getPokemonLevel(Index) < levelPokesTo then
 		return true
@@ -311,7 +319,7 @@ function onBattleAction()
 				if getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
 					return run()
 				elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
-					return sendUsablePokemon() or run()
+					return sendPokemon(sendUsablePokemonAboveLevel()) or run()
 				elseif failedRun then
 					failedRun = false
 					return sendUsablePokemon() or attack()
