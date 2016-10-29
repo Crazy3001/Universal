@@ -202,8 +202,7 @@ end
 function sendUsablePokemonAboveLevel()
 	for i=1, numberPokemonUsed, 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
-			sendPokemon(i)
-			return
+			return i
 		end
 	end
 	return 0
@@ -321,15 +320,15 @@ function onBattleAction()
 				if getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
 					return run()
 				elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
-					return sendUsablePokemonAboveLevel() or run()
+					return sendPokemon(getFirstUsablePokemon()) or run()
 				elseif failedRun then
 					failedRun = false
 					return sendUsablePokemon() or attack()
 				else
-					return attack() or sendUsablePokemonAboveLevel() or run()
+					return attack() or sendPokemon(getFirstUsablePokemon()) or run()
 				end
 			else
-				return sendUsablePokemonAboveLevel() or run()
+				return sendPokemon(getFirstUsablePokemon()) or run()
 			end
 		else
 			run()
