@@ -283,7 +283,7 @@ canNotSwitch = false
 		end
 	end
 	
-	if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(numberPokemonUsed) >= healthToRunAt then	
+	if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(getTotalUsablePokemonCount()) >= healthToRunAt then	
 		if getMapName() == location then
 			if lookForGrass then
 				if moveToGrass() then return end
@@ -318,7 +318,7 @@ function onBattleAction()
         end
 		if isWildBattle() and not isOnList(evadeThesePokemon) then
 			if isPokemonUsable(getActivePokemonNumber()) then
-				if getPokemonHealthPercent(numberPokemonUsed) < healthToRunAt then
+				if getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
 					return run()
 				elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
 					return sendUsablePokemonAboveLevel() or run()
@@ -326,7 +326,7 @@ function onBattleAction()
 					failedRun = false
 					return sendUsablePokemon() or attack()
 				else
-					return attack() or sendUsablePokemon() or run()
+					return attack() or sendUsablePokemonAboveLevel() or run()
 				end
 			else
 				return sendUsablePokemonAboveLevel() or run()
