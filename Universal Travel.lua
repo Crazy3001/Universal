@@ -29,13 +29,13 @@ description = "Press Start."
 --Pokecenter Fortree City       --Pokecenter Mossdeep City     --Pokecenter Rustboro City     --Pokemon League Hoenn
 --
 
-location = "Vermilion Pokecenter"
+local location = "Vermilion Pokecenter"
 
-goToNearestPokecenter = true  --set true to use the nearest pokecenter
+local goToNearestPokecenter = false  --set true to use the nearest pokecenter
 
-fight = false  --set true if you want to fight wild encounters on the way. false will run.
+local fight = false  --set true if you want to fight wild encounters on the way. false will run.
 
-autoEvolve = "off"
+local autoEvolve = "off"
 
 
 				--#################################################--
