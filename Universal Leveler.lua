@@ -17,7 +17,7 @@ local autoEvolve = "off"
 local location = ""		
 
 --Will catch any Pokemon that is not registered as owned in your Pokedex.
-local catchNotCaught = false
+local catchNotCaught = true
 
 --the below is case-sensitive, add more moves by adding commas. ex : onlyCatchThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
 --Even if you set all other capture variables to false, we'll still try to catch these/this pokemon--
@@ -35,7 +35,7 @@ local minLevel = 1
 	
 --Choose how many pokemon you want to level.--
 --The pokemon in the first X slots will be sorted in order by lowest level to highest and levelled--
---Whatever number you put in, when that pokemons health gets below healthToRunAt, it will run and use pokecenter.--
+--If you want to use a Pokemon for just fighting, inlude that pokemon in your count too--
 local numberPokemonUsed = 6
 
 --True = Sorts your Pokemon that are being used by level, low to high.
@@ -181,8 +181,8 @@ function ReturnHighestIndexUnderLevel()
 end
 
 function getFirstUsablePokemon()
-	for i=1, getTeamSize(), 1 do
-		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
+	for i=1, numberPokemonUsed, 1 do
+		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
 			return i
 		end
 	end
@@ -202,20 +202,15 @@ end
 function sendUsablePokemonAboveLevel()
 	for i=1, numberPokemonUsed, 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
-			return i
+			sendPokemon(i)
+			return
 		end
 	end
 	return 0
 end
-function isUsable(Index)
-	if getPokemonHealth(Index) > 1 and getPokemonLevel(Index) < levelPokesTo then
-		return true
-	end
-	return false
-end
 
 function getPokemonIdWithItem(ItemName)	
-	for i=1, getTeamSize(), 1 do
+	for i=1, numberPokemonUsed, 1 do
 		if getPokemonHeldItem(i) == ItemName then
 			return i
 		end
@@ -304,34 +299,39 @@ canNotSwitch = false
 	end
 end
 
+function isUsable(Index)
+	if getPokemonHealth(Index) > 1 and getPokemonLevel(Index) < levelPokesTo and getPokemonLevel(Index) >= minLevel then
+		return true
+	end
+	return false
+end
+
 function onBattleAction()
-    if getActivePokemonNumber() <= getTeamSize() then
-        if isWildBattle() and isOpponentShiny() or isOnList(catchThesePokemon) or (catchNotCaught and not isAlreadyCaught()) then
-			if isPokemonUsable(getActivePokemonNumber()) then
-				if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-					return
-				end
-			else
-				return sendUsablePokemon() or sendAnyPokemon()
-			end
-        end
-		if isWildBattle() and not isOnList(evadeThesePokemon) then
-			if isPokemonUsable(getActivePokemonNumber()) then
-				if getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
-					return run()
-				elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
-					return sendPokemon(getFirstUsablePokemon()) or run()
-				elseif failedRun then
-					failedRun = false
-					return sendUsablePokemon() or attack()
-				else
-					return attack() or sendPokemon(getFirstUsablePokemon()) or run()
-				end
-			else
-				return sendPokemon(getFirstUsablePokemon()) or run()
+	if isWildBattle() and isOpponentShiny() or isOnList(catchThesePokemon) or (catchNotCaught and not isAlreadyCaught()) then
+		if isPokemonUsable(getActivePokemonNumber()) then
+			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+				return
 			end
 		else
-			run()
+			return sendUsablePokemon() or sendAnyPokemon()
 		end
-    end    
+	end
+	if isWildBattle() and not isOnList(evadeThesePokemon) then
+		if isUsable(getActivePokemonNumber()) then
+			if getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
+				return run()
+			elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
+				return sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
+			elseif failedRun then
+				failedRun = false
+				return sendUsablePokemon() or attack()
+			else
+				return attack() or sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
+			end
+		else
+			return sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
+		end
+	else
+		run()
+	end
 end
