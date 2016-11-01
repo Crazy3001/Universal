@@ -19,24 +19,20 @@ local location = ""
 --Will catch any Pokemon that is not registered as owned in your Pokedex.
 local catchNotCaught = true
 
---the below is case-sensitive, add more moves by adding commas. ex : onlyCatchThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
+--the below is case-sensitive, add more moves by adding commas. example : catchThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
 --Even if you set all other capture variables to false, we'll still try to catch these/this pokemon--
 --Leave an empty "" here if you aren't using it--
 local catchThesePokemon = {""}
 
---When leveling, if there are any Pokemon you do not want to fight, put them in here.--
+--When leveling, if there are any Pokemon you do not want to fight, put them in here. Example : evadeThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
+--Leave an empty "" here if you aren't using it--
 local evadeThesePokemon = {""}
 	
---Will level your pokemon to this level then stop. Put 101 if EV Training or don't want a cap--
+--Will level your pokemon to this level then stop. Put 101 if EV Training or if you want level 100 Pokemon to fight.--
 local levelPokesTo = 100
 
 --What level you want your pokemon to start fight instead of switching out.
 local minLevel = 1
-	
---Choose how many pokemon you want to level.--
---The pokemon in the first X slots will be sorted in order by lowest level to highest and levelled--
---If you want to use a Pokemon for just fighting, inlude that pokemon in your count too--
-local numberPokemonUsed = 6
 
 --True = Sorts your Pokemon that are being used by level, low to high.
 local sortTeam = true
@@ -75,7 +71,7 @@ local typeRod = "Super Rod"
 				--#################################################--
 
 				
-description = "Training at " .. location .. "." .. " Leveling " .. numberPokemonUsed .. " pokemon to level " .. levelPokesTo .. ". Press Start"
+description = "Training at " .. location .. "." .. " Leveling pokemon to level " .. levelPokesTo .. ". Press Start"
 
 local pf = require "PathFinder/MoveToApp"
 
@@ -181,7 +177,7 @@ function ReturnHighestIndexUnderLevel()
 end
 
 function getFirstUsablePokemon()
-	for i=1, numberPokemonUsed, 1 do
+	for i=1, getTeamSize(), 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
 			return i
 		end
@@ -191,12 +187,31 @@ end
 
 function getTotalUsablePokemonCount()
 	local count = 0
-	for i=1, numberPokemonUsed, 1 do
-		if getPokemonHealth(i) > 1 and getPokemonLevel(i) < levelPokesTo then
+	for i=1, getTeamSize(), 1 do
+		if isPokemonUsable(i) and getPokemonLevel(i) < levelPokesTo then
 			count = count + 1
 		end
 	end
 	return count
+end
+
+function isSorted()
+	local pokemonsUsable = getTotalUsablePokemonCount()
+	for pokemonId=1, pokemonsUsable, 1 do
+		if not isPokemonUsable(pokemonId) or getPokemonLevel(pokemonId) >= levelPokesTo then --Move it at bottom of the Team
+			for pokemonId_ = pokemonsUsable + 1, getTeamSize(), 1 do
+				if isPokemonUsable(pokemonId_) then
+					swapPokemon(pokemonId, pokemonId_)
+					return true
+				end
+			end
+			
+		end
+	end
+	if not isTeamRangeSortedByLevelAscending(1, pokemonsUsable) then --Sort the team without not usable pokemons
+		return sortTeamRangeByLevelAscending(1, pokemonsUsable)
+	end
+	return false
 end
 
 function sendUsablePokemonAboveLevel()
@@ -210,7 +225,7 @@ function sendUsablePokemonAboveLevel()
 end
 
 function getPokemonIdWithItem(ItemName)	
-	for i=1, numberPokemonUsed, 1 do
+	for i=1, getTeamSize(), 1 do
 		if getPokemonHeldItem(i) == ItemName then
 			return i
 		end
@@ -245,21 +260,15 @@ function leftovers()
 	end
 end
 
-function isSorted()
-	local usablePokemon = getTotalUsablePokemonCount()
-	for i=1, usablePokemon, 1 do
-		if not isUsable(i) then 
-			for i_=usablePokemon + 1, numberPokemonUsed, 1 do
-				if isPokemonUsable(i_) then
-					swapPokemon(i, i_)
-					return true
-				end
-			end
-			
+function allPokemonAboveLevel()
+	local count = 0
+	for i=1, getTeamSize(), 1 do
+		if getPokemonLevel(i) >= levelPokesTo then
+			count = count + 1
 		end
 	end
-	if not isTeamRangeSortedByLevelAscending(1, usablePokemon) then
-		return sortTeamRangeByLevelAscending(1, usablePokemon)
+	if count == getTeamSize() then
+		return true
 	end
 	return false
 end
@@ -277,30 +286,34 @@ canNotSwitch = false
 		end
 	end
 	
-	if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(getTotalUsablePokemonCount()) >= healthToRunAt then	
-		if getMapName() == location then
-			if lookForGrass then
-				if moveToGrass() then return end
-			elseif lookForWater then
-				if moveToWater() then return end
-			elseif caveGround then
-				if moveToRectangle(caveRectangle[1],caveRectangle[2],caveRectangle[3],caveRectangle[4]) then return end
-			elseif fishing then
-				if isOnCell(fishCell[1],fishCell[2]) then
-					if useItem(typeRod) then return end
-				else
-					moveToCell(fishCell[1],fishCell[2])
+	if not allPokemonAboveLevel() then
+		if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(getTotalUsablePokemonCount()) >= healthToRunAt then	
+			if getMapName() == location then
+				if lookForGrass then
+					if moveToGrass() then return end
+				elseif lookForWater then
+					if moveToWater() then return end
+				elseif caveGround then
+					if moveToRectangle(caveRectangle[1],caveRectangle[2],caveRectangle[3],caveRectangle[4]) then return end
+				elseif fishing then
+					if isOnCell(fishCell[1],fishCell[2]) then
+						if useItem(typeRod) then return end
+					else
+						moveToCell(fishCell[1],fishCell[2])
+					end
 				end
+			else pf.MoveTo(location)
 			end
-		else pf.MoveTo(location)
+		else 
+			return pf.UseNearestPokecenter()
 		end
-	else 
-		return pf.UseNearestPokecenter()
+	else
+		logout()
 	end
 end
 
 function isUsable(Index)
-	if getPokemonHealth(Index) > 1 and getPokemonLevel(Index) < levelPokesTo and getPokemonLevel(Index) >= minLevel then
+	if getPokemonHealth(Index) >= 1 and getPokemonLevel(Index) < levelPokesTo then
 		return true
 	end
 	return false
