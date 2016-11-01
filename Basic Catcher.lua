@@ -1,4 +1,4 @@
-name = "Universal Catcher"
+name = "Basic Catcher"
 author = "Crazy3001"
 description = "Make sure your configuration is done properly. Press Start."
 
@@ -36,7 +36,7 @@ local autoEvolve = "off"
 
 
 --Location you want to hunt. Example: location = "Dragons Den"
-local location = "Safari Area 3"
+local location = ""
 --##########################################################################################
 --Put only 1 true.
 local grass = true
@@ -275,13 +275,13 @@ function sortTeam()
 end
 
 function isTeamSorted()
-	if hasSync(syncNature) and hasSync(syncNature) ~= 1 then
+	if useSync and hasSync(syncNature) and hasSync(syncNature) ~= 1 then
 		return false
 	end
-	if not hasSync(syncNature) and hasPokemonWithMove("Role Play") and hasPokemonWithMove("Role Play") ~= 1 then
+	if not useSync and useRole and hasPokemonWithMove("Role Play") and hasPokemonWithMove("Role Play") ~= 1 then
 		return false
 	end
-	if not hasSync(syncNature) and not hasPokemonWithMove("Role Play") and hasPokemonWithMove("False Swipe") and hasSwipe ~= 1 then
+	if not useSync and not useRole and useSwipe and hasPokemonWithMove("False Swipe") and hasPokemonWithMove("False Swipe") ~= 1 then
 		return false
 	end
 	return true
