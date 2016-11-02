@@ -12,7 +12,7 @@ description = "Make sure your configuration is done properly. Press Start."
 local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
-local catchNotCaught = false
+local catchNotCaught = true
 --##########################################################################################
 --Determines the percentage that the opponents health has to be to start throwing pokeballs. If using False Swipe, leave at 1.
 local throwHealth = 20
@@ -87,7 +87,7 @@ local useStatus = true
 
 local pf = require "Pathfinder/MoveToApp"
 
-function onStart()
+local function onStart()
 local syncId = hasSync(syncNature)
 healCounter = 0
 shinyCounter = 0
@@ -109,7 +109,7 @@ wildCounter = 0
 	log("****************************************BOT STARTED*****************************************")
 end
 
-function onPause()
+local function onPause()
 	log("***********************************PAUSED - SESSION STATS***********************************")
     log("You have visited the PokeCenter " .. healCounter .. " times.")
     log("Pokemon Encountered: " .. wildCounter)
@@ -118,7 +118,7 @@ function onPause()
     log("********************************************************************************************")
 end
 
-function onResume()
+local function onResume()
 	log("****************************************BOT RESUMED*****************************************")
 end
 
@@ -129,7 +129,7 @@ function onDialogMessage(message)
     end
 end
 
-function onBattleMessage(wild)
+local function onBattleMessage(wild)
 	if stringContains(wild, "A Wild SHINY ") then
 		shinyCounter = shinyCounter + 1
 		wildCounter = wildCounter + 1
@@ -156,13 +156,13 @@ function onBattleMessage(wild)
 	end
 end
 
-function TableLength(T)
+local function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-function isOnList(List)
+local function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -174,14 +174,14 @@ function isOnList(List)
     return result
 end
 
-function isOnCell(X, Y)
+local function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-function hasUsablePokemonWithMove(Move)
+local function hasUsablePokemonWithMove(Move)
 	local hasUsablePokemonWithMove = {}
 	hasUsablePokemonWithMove["id"] = 0
 	hasUsablePokemonWithMove["move"] = nil
@@ -206,7 +206,7 @@ function hasUsablePokemonWithMove(Move)
 	return false
 end
 
-function hasPokemonWithMove(Move)
+local function hasPokemonWithMove(Move)
 	local hasPokemonWithMove = {}
 	hasPokemonWithMove["id"] = 0
 	hasPokemonWithMove["move"] = nil
@@ -231,7 +231,7 @@ function hasPokemonWithMove(Move)
 	return false
 end
 
-function hasUsableSync(Nature)
+local function hasUsableSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature and getPokemonHealth(i) >= 1 then
             return i, true
@@ -240,7 +240,7 @@ function hasUsableSync(Nature)
     return 0, false
 end
 
-function hasSync(Nature)
+local function hasSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature then
             return i, true
@@ -249,7 +249,52 @@ function hasSync(Nature)
     return 0, false
 end
 
-function sortTeam()
+local function getPokemonIdWithItem(ItemName)	
+	for i=1, getTeamSize(), 1 do
+		if getPokemonHeldItem(i) == ItemName then
+			return i
+		end
+	end
+	return 0
+end
+
+local function getFirstUsablePokemon()
+	for i=1, getTeamSize(), 1 do
+		if isPokemonUsable(i) then
+			return i
+		end
+	end
+	return 0
+end
+
+local function leftovers()
+	ItemName = "Leftovers"
+	local PokemonNeedLeftovers = getFirstUsablePokemon()
+	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
+	
+	if getTeamSize() > 0 then
+		if PokemonWithLeftovers > 0 then
+			if PokemonNeedLeftovers == PokemonWithLeftovers  then
+				return false -- now leftovers is on rightpokemon
+			else
+				takeItemFromPokemon(PokemonWithLeftovers)
+				return true
+			end
+		else
+
+			if hasItem(ItemName) and PokemonNeedLeftovers ~= 0 then
+				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
+				return true
+			else
+				return false
+			end
+		end
+	else
+		return false
+	end
+end
+
+local function sortTeam()
 	if useSync and hasSync(syncNature) then
 		if hasSync(syncNature) == 1 then
 			return true
@@ -274,7 +319,7 @@ function sortTeam()
 	return false
 end
 
-function isTeamSorted()
+local function isTeamSorted()
 	if useSync and hasSync(syncNature) and hasSync(syncNature) ~= 1 then
 		return false
 	end
@@ -287,7 +332,7 @@ function isTeamSorted()
 	return true
 end
 
-function isTeamUsable()
+local function isTeamUsable()
 	if useSync and not hasUsableSync(syncNature) then
 		return false
 		
@@ -304,54 +349,26 @@ function isTeamUsable()
 	end
 end
 
-function goToPath()
+local function goToPath()
 	if getMapName() == location then
-		if huntIn == grass then
-			moveToGrass()
-		end
-		if huntIn == water then
-			moveToWater()
-		end
-		if huntIn == cave then
-			return moveToRectangle(caveRectangle[1], caveRectangle[2], caveRectangle[3], caveRectangle[4])
-		end
-		if huntIn == fishing then
-			if isOnCell(fishingCell[1], fishingCell[2]) then
+		if grass then
+			if moveToGrass() then return end
+		elseif water then
+			if moveToWater() then return end
+		elseif cave then
+			if moveToRectangle(caveRectangle[1],caveRectangle[2],caveRectangle[3],caveRectangle[4]) then return end
+		elseif fish then
+			if isOnCell(fishCell[1],fishCell[2]) then
 				if useItem(typeRod) then return end
 			else
-				moveToCell(fishingCell[1], fishingCell[2])
+				moveToCell(fishCell[1],fishCell[2])
 			end
 		end
 	else pf.MoveTo(location)
 	end	
 end
 
-function onPathAction()
-usedRole = false
-roleMatched = false
-		
-	if isTeamSorted() then
-		if isTeamUsable() then
-			goToPath()
-		else
-			pf.UseNearestPokecenter()
-		end
-	else
-		sortTeam()
-	end
-end
-
-function onBattleAction()
-	if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
-		startRole()
-	elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatch) or (catchNotCaught and not isAlreadyCaught()) then
-		startBattle()
-	else
-		return run() or sendUsablePokemon() 
-	end
-end
-
-function startRole()
+local function startRole()
 	if usedRole == false then
 		if hasUsablePokemonWithMove("Role Play") then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove("Role Play") then
@@ -373,7 +390,7 @@ function startRole()
 	end	
 end
 
-function startBattle()
+local function startBattle()
 	if getOpponentHealthPercent() > throwHealth then	
 		if hasUsablePokemonWithMove("False Swipe") then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
@@ -419,4 +436,35 @@ function startBattle()
 			end
 		end
 	end	
+end
+
+function onPathAction()
+usedRole = false
+roleMatched = false
+
+	if useLeftovers then
+		if leftovers() then
+			return true
+		end
+	end
+		
+	if isTeamSorted() then
+		if isTeamUsable() then
+			goToPath()
+		else
+			pf.UseNearestPokecenter()
+		end
+	else
+		sortTeam()
+	end
+end
+
+function onBattleAction()
+	if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
+		startRole()
+	elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatch) or (catchNotCaught and not isAlreadyCaught()) then
+		startBattle()
+	else
+		return run() or sendUsablePokemon() 
+	end
 end
