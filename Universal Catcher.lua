@@ -157,7 +157,7 @@ local typeBall = "Pokeball"
 
 local pf = require "Pathfinder/MoveToApp"
 
-local function onStart()
+function onStart()
 local syncId = hasSync(syncNature)
 healCounter = 0
 shinyCounter = 0
@@ -179,7 +179,7 @@ wildCounter = 0
 	log("****************************************BOT STARTED*****************************************")
 end
 
-local function onPause()
+function onPause()
 	log("***********************************PAUSED - SESSION STATS***********************************")
     log("You have visited the PokeCenter " .. healCounter .. " times.")
     log("Pokemon Encountered: " .. wildCounter)
@@ -188,18 +188,18 @@ local function onPause()
     log("********************************************************************************************")
 end
 
-local function onResume()
+function onResume()
 	log("****************************************BOT RESUMED*****************************************")
 end
 
-local function onDialogMessage(message)
+function onDialogMessage(message)
     if stringContains(message, "There you go, take care of them!") then
 		healCounter = healCounter + 1
 		log("You have visited the PokeCenter ".. healCounter .." times.")
     end
 end
 
-local function onBattleMessage(wild)
+function onBattleMessage(wild)
 	if stringContains(wild, "A Wild SHINY ") then
 		shinyCounter = shinyCounter + 1
 		wildCounter = wildCounter + 1

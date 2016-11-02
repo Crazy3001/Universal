@@ -50,7 +50,7 @@ local autoEvolve = "off"
 
 local pf = require "Pathfinder/MoveToApp"
 
-local function onStart()
+function onStart()
     shinyCounter = 0
     catchCounter = 0
     wildCounter = 0
@@ -73,11 +73,11 @@ local function onStart()
 	end
 end
 
-local function onPause()
+function onPause()
 	log("***********************************PAUSED************************************")
 end
 
-local function onResume()
+function onResume()
 	log("***********************************RESUMED***********************************")
  	if goToNearestPokecenter == true then
 		log("Travelling to " .. getMapName(goToNearestPokecenter) .. ".")
@@ -86,7 +86,7 @@ local function onResume()
 	end
 end
 
-local function onBattleMessage(wild)
+function onBattleMessage(wild)
     if stringContains(wild, "A Wild SHINY ") then
        shinyCounter = shinyCounter + 1
        wildCounter = wildCounter + 1
@@ -106,7 +106,7 @@ local function onBattleMessage(wild)
 	  end
 end
 
-local function onBattleMessage(message)
+function onBattleMessage(message)
     if message == "You failed to run away!" then
         failedRun = true
     end

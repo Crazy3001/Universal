@@ -75,7 +75,7 @@ description = "Training at " .. location .. "." .. " Leveling pokemon to level "
 
 local pf = require "PathFinder/MoveToApp"
 
-local function onStart()
+function onStart()
    healCounter = 0
    shinyCounter = 0
    catchCounter = 0
@@ -95,7 +95,7 @@ local function onStart()
 	end
 end
 
-local function onPause()
+function onPause()
    log("***********************************PAUSED - SESSION STATS***********************************")
    log("Shinies Caught: " .. shinyCounter)
    log("Pokemon Caught: " .. catchCounter)
@@ -104,18 +104,18 @@ local function onPause()
    log("*********************************************************************************************")
 end
 
-local function onResume()
+function onResume()
    log("SESSION RESUMED")
 end
 
-local function onDialogMessage(pokecenter)
+function onDialogMessage(pokecenter)
     if stringContains(pokecenter, "There you go, take care of them!") then
 		healCounter = healCounter + 1
 		log("You have visited the PokeCenter ".. healCounter .." times.")
     end
 end
 
-local function onBattleMessage(wild)
+function onBattleMessage(wild)
     if stringContains(wild, "A Wild SHINY ") then
        shinyCounter = shinyCounter + 1
        wildCounter = wildCounter + 1
