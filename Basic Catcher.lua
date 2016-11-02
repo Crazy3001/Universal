@@ -9,13 +9,13 @@ description = "Make sure your configuration is done properly. Press Start."
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatch = {"Charmander"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
 local catchNotCaught = true
 --##########################################################################################
 --Determines the percentage that the opponents health has to be to start throwing pokeballs. If using False Swipe, leave at 1.
-local throwHealth = 1
+local throwHealth = 20
 --##########################################################################################
 --Must be filled in. Determines what type of ball to use when catching, and what type to buy. Example: typeBall = "Pokeball"
 local typeBall = "Pokeball"
@@ -36,15 +36,15 @@ local autoEvolve = "off"
 
 
 --Location you want to hunt. Example: location = "Dragons Den"
-local location = "Cinnabar mansion 3"
+local location = ""
 --##########################################################################################
 --Put only 1 true.
-local grass = false
+local grass = true
 local water = false
-local cave = true
+local cave = false
 local fish = false 
 --If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
-local caveRectangle = {1,10,14,25}
+local caveRectangle = {1,2,3,4}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCell = {1,2}
 		
@@ -58,7 +58,7 @@ local fishingCell = {1,2}
 --If using a Sync Pokemon, set true.
 local useSync = true
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNature = "Timid"
+local syncNature = ""
 --##########################################################################################
 --If using Role Play, set true.
 local useRole = false
