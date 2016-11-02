@@ -9,13 +9,13 @@ description = "Make sure your configuration is done properly. Press Start."
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatch = {"Charmander"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
 local catchNotCaught = true
 --##########################################################################################
 --Determines the percentage that the opponents health has to be to start throwing pokeballs. If using False Swipe, leave at 1.
-local throwHealth = 20
+local throwHealth = 1
 --##########################################################################################
 --Must be filled in. Determines what type of ball to use when catching, and what type to buy. Example: typeBall = "Pokeball"
 local typeBall = "Pokeball"
@@ -36,15 +36,15 @@ local autoEvolve = "off"
 
 
 --Location you want to hunt. Example: location = "Dragons Den"
-local location = ""
+local location = "Cinnabar mansion 3"
 --##########################################################################################
 --Put only 1 true.
-local grass = true
+local grass = false
 local water = false
-local cave = false
+local cave = true
 local fish = false 
 --If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
-local caveRectangle = {1,2,3,4}
+local caveRectangle = {1,10,14,25}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCell = {1,2}
 		
@@ -58,7 +58,7 @@ local fishingCell = {1,2}
 --If using a Sync Pokemon, set true.
 local useSync = true
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNature = ""
+local syncNature = "Timid"
 --##########################################################################################
 --If using Role Play, set true.
 local useRole = false
@@ -87,8 +87,7 @@ local useStatus = true
 
 local pf = require "Pathfinder/MoveToApp"
 
-local function onStart()
-local syncId = hasSync(syncNature)
+function onStart()
 healCounter = 0
 shinyCounter = 0
 catchCounter = 0
@@ -109,7 +108,7 @@ wildCounter = 0
 	log("****************************************BOT STARTED*****************************************")
 end
 
-local function onPause()
+function onPause()
 	log("***********************************PAUSED - SESSION STATS***********************************")
     log("You have visited the PokeCenter " .. healCounter .. " times.")
     log("Pokemon Encountered: " .. wildCounter)
@@ -118,7 +117,7 @@ local function onPause()
     log("********************************************************************************************")
 end
 
-local function onResume()
+function onResume()
 	log("****************************************BOT RESUMED*****************************************")
 end
 
@@ -129,7 +128,7 @@ function onDialogMessage(message)
     end
 end
 
-local function onBattleMessage(wild)
+function onBattleMessage(wild)
 	if stringContains(wild, "A Wild SHINY ") then
 		shinyCounter = shinyCounter + 1
 		wildCounter = wildCounter + 1
