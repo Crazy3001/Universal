@@ -158,7 +158,6 @@ local typeBall = "Pokeball"
 local pf = require "Pathfinder/MoveToApp"
 
 function onStart()
-local syncId = hasSync(syncNature)
 healCounter = 0
 shinyCounter = 0
 catchCounter = 0
