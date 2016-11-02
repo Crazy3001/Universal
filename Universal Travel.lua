@@ -59,18 +59,6 @@ function onStart()
 	else
 		log("Travelling to " .. location .. ".")
 	end
-	
-	if autoEvolve == "on" then
-		if not isAutoEvolve() then
-			enableAutoEvolve()
-		end
-	end
-
-	if autoEvolve == "off" then
-		if isAutoEvolve then
-			disableAutoEvolve()
-		end
-	end
 end
 
 function onPause()

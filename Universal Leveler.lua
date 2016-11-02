@@ -9,8 +9,6 @@ author = "Crazy3001"
 --Dragons Den
 --Victory Road Kanto 3F
 
---Auto Evolve on or off.--
-local autoEvolve = "on" 	
 
 --Case Sensitive--
 --Put the name of the map you want to train at between "". {Example: location = "Route 121"}
@@ -81,18 +79,6 @@ function onStart()
    catchCounter = 0
    wildCounter = 0
    log("Start botting.")
-   
-	if autoEvolve == "on" then
-		if not isAutoEvolve() then
-			enableAutoEvolve()
-		end
-	end
-
-	if autoEvolve == "off" then
-		if isAutoEvolve then
-			disableAutoEvolve()
-		end
-	end
 end
 
 function onPause()

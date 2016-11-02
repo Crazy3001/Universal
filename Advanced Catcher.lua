@@ -1,21 +1,18 @@
-name = "Basic Catcher"
+name = "Advanced Catcher"
 author = "Crazy3001"
-description = "Make sure your configuration is done properly. Press Start."
+description = "Catch by Morning, Day and Night. Make sure your configuration is done properly. Press Start."
 
 
 				--#################################################--
 				-------------------GLOBAL SETTINGS-------------------
 				--#################################################--
 
-				
---Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
---##########################################################################################
+
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
-local catchNotCaught = true
+local catchNotCaught = false
 --##########################################################################################
 --Determines the percentage that the opponents health has to be to start throwing pokeballs. If using False Swipe, leave at 1.
-local throwHealth = 10
+local throwHealth = 20
 --##########################################################################################
 --Must be filled in. Determines what type of ball to use when catching, and what type to buy. Example: typeBall = "Pokeball"
 local typeBall = "Pokeball"
@@ -23,53 +20,93 @@ local typeBall = "Pokeball"
 --If fishing, what type of rod to use. (Old Rod, Good Rod, Super Rod)
 local typeRod = "Super Rod"
 --##########################################################################################
---If set true, if you have Leftovers, it will give it to your lead Pokemon.--
+--If set true, if you have Leftovers, it will automatically put it on your lead Pokemon.--
 local useLeftovers = true
-
-
-				--#################################################--
-				-------------------LOCATION SETTINGS-------------------
-				--#################################################--
-
-
---Location you want to hunt. Example: location = "Dragons Den"
-local location = ""
 --##########################################################################################
---Put only 1 true.
-local grass = true
-local water = false
-local cave = false
-local fish = false 
---If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
-local caveRectangle = {1,2,3,4}
---If fishing, put in the cell number you want to fish {X,Y}
-local fishingCell = {1,2}
-		
-		
-				--#################################################--
-				-------------------TEAM SETTINGS-------------------
-				--#################################################--
-
-				
---##########################################################################################
---If using a Sync Pokemon, set true.
-local useSync = true
---Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNature = ""
---##########################################################################################
---If using Role Play, set true.
 local useRole = false
 --If using Role Play, put in the abilities you want to catch. If not using, put "". You can have multiple Abilities/multiple Pokemon. Example: roleAbility = {"Ability 1", "Ability 2", "Ability 3"}
 local roleAbility = {""}
 --If using Role Play, put in the pokemon you want to Role. If not using, put "". You can have multiple Pokemon. Example: pokemonToRole = {"Pokemon 1", "Pokemon 2"}
 local pokemonToRole = {""}
 --##########################################################################################
---If using False Swipe, set true.
 local useSwipe = true
 --##########################################################################################
---If using a Status Move, set true.
---Status Move List - {"glare", "stun spore", "thunder wave", "hypnosis", "lovely kiss", "sing", "sleep spore", "spore"}
 local useStatus = true
+
+
+				--#################################################--
+				-------------------MORNING SETTINGS-------------------
+				--#################################################--
+
+				
+--Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
+local pokemonToCatchMorning = {} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+--##########################################################################################
+--Location you want to hunt. Example: location = "Dragons Den"
+local locationMorning = ""
+--Put only 1 true.
+local grassMorning = true
+local waterMorning = false
+local caveMorning = false
+local fishMorning = false
+--If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
+local caveRectangleMorning = {1,2,3,4}
+--If fishing, put in the cell number you want to fish {X,Y}
+local fishingCellMorning = {1,2}
+--##########################################################################################
+local useSyncMorning = false
+--Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
+local syncNatureMorning = ""
+
+
+				--#################################################--
+				-------------------DAY SETTINGS-------------------
+				--#################################################--
+
+				
+--Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
+local pokemonToCatchDay = {} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+--##########################################################################################
+--Location you want to hunt. Example: location = "Dragons Den"
+local locationDay = ""
+--Put only 1 true.
+local grassDay = true 
+local waterDay = false 
+local caveDay = false 
+local fishDay = false 
+--If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
+local caveRectangleDay = {1,2,3,4}
+--If fishing, put in the cell number you want to fish {X,Y}
+local fishingCellDay = {1,2}
+--##########################################################################################
+local useSyncDay = false
+--Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
+local syncNatureDay = ""
+
+
+				--#################################################--
+				-------------------NIGHT SETTINGS-------------------
+				--#################################################--
+
+				
+--Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
+local pokemonToCatchNight = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+--##########################################################################################
+--Location you want to hunt. Example: location = "Dragons Den"
+local locationNight = ""
+--Put only 1 true.
+local grassNight = true
+local waterNight = false
+local caveNight = false
+local fishNight = false
+--If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
+local caveRectangleNight = {1,2,3,4}
+--If fishing, put in the cell number you want to fish {X,Y}
+local fishingCellNight = {1,2}
+--##########################################################################################
+local useSyncNight = false
+--Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
+local syncNatureNight = ""
 
 
 				--#################################################--
@@ -233,67 +270,73 @@ local function hasSync(Nature)
     return 0, false
 end
 
-local function getPokemonIdWithItem(ItemName)	
-	for i=1, getTeamSize(), 1 do
-		if getPokemonHeldItem(i) == ItemName then
-			return i
-		end
-	end
-	return 0
-end
-
-local function getFirstUsablePokemon()
-	for i=1, getTeamSize(), 1 do
-		if isPokemonUsable(i) then
-			return i
-		end
-	end
-	return 0
-end
-
-local function leftovers()
-	ItemName = "Leftovers"
-	local PokemonNeedLeftovers = getFirstUsablePokemon()
-	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
-	
-	if getTeamSize() > 0 then
-		if PokemonWithLeftovers > 0 then
-			if PokemonNeedLeftovers == PokemonWithLeftovers  then
-				return false -- now leftovers is on rightpokemon
-			else
-				takeItemFromPokemon(PokemonWithLeftovers)
-				return true
-			end
-		else
-
-			if hasItem(ItemName) and PokemonNeedLeftovers ~= 0 then
-				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
-				return true
-			else
-				return false
-			end
-		end
-	else
-		return false
-	end
-end
-
 local function sortTeam()
-	if useSync and hasSync(syncNature) then
-		if hasSync(syncNature) == 1 then
+	
+	if isMorning() and useSyncMorning and hasSync(syncNatureMorning) then
+		if hasSync(syncNatureMorning) == 1 then
 			return true
 		else
-			return swapPokemon(hasSync(syncNature), 1)
+			return swapPokemon(hasSync(syncNatureMorning), 1)
 		end
 	end
-	if not useSync and useRole and hasPokemonWithMove("Role Play") then
+	
+	if isMorning() and not useSyncMorning and useRole and hasPokemonWithMove("Role Play") then
 		if hasPokemonWithMove("Role Play") == 1 then
 			return true
 		else
 			return swapPokemon(hasPokemonWithMove("Role Play"), 1)
 		end
 	end
-	if not useSync and not useRole and useSwipe and hasPokemonWithMove("False Swipe") then
+	
+	if isMorning() and not useSync and not useRole and useSwipe and hasPokemonWithMove("False Swipe") then
+		if hasPokemonWithMove("False Swipe") == 1 then
+			return true
+		else
+			return swapPokemon(hasPokemonWithMove("False Swipe"), 1)
+		end
+	end
+	
+	if isNoon() and useSyncDay and hasSync(syncNatureDay) then
+		if hasSync(syncNatureDay) == 1 then
+			return true
+		else
+			return swapPokemon(hasSync(syncNatureDay), 1)
+		end
+	end
+	
+	if isNoon() and not useSyncDay and useRole and hasPokemonWithMove("Role Play") then
+		if hasPokemonWithMove("Role Play") == 1 then
+			return true
+		else
+			return swapPokemon(hasPokemonWithMove("Role Play"), 1)
+		end
+	end
+	
+	if isNoon() and not useSyncDay and not useRole and useSwipe and hasPokemonWithMove("False Swipe") then
+		if hasPokemonWithMove("False Swipe") == 1 then
+			return true
+		else
+			return swapPokemon(hasPokemonWithMove("False Swipe"), 1)
+		end
+	end
+	
+	if isNight() and useSyncNight and hasSync(syncNatureNight) then
+		if hasSync(syncNatureNight) == 1 then
+			return true
+		else
+			return swapPokemon(hasSync(syncNatureNight), 1)
+		end
+	end
+
+	if isNight() and not useSyncNight and useRole and hasPokemonWithMove("Role Play") then
+		if hasPokemonWithMove("Role Play") == 1 then
+			return true
+		else
+			return swapPokemon(hasPokemonWithMove("Role Play"), 1)
+		end
+	end
+	
+	if isNight() and not useSyncNight and not useRole and useSwipe and hasPokemonWithMove("False Swipe") then
 		if hasPokemonWithMove("False Swipe") == 1 then
 			return true
 		else
@@ -304,22 +347,31 @@ local function sortTeam()
 end
 
 local function isTeamSorted()
-	if useSync and hasSync(syncNature) and hasSync(syncNature) ~= 1 then
+	if isMorning() and hasSync(syncNatureMorning) and hasSync(syncNatureMorning) ~= 1 then
 		return false
 	end
-	if not useSync and useRole and hasPokemonWithMove("Role Play") and hasPokemonWithMove("Role Play") ~= 1 then
+	if isNoon() and hasSync(syncNatureDay) and hasSync(syncNatureDay) ~= 1 then
 		return false
 	end
-	if not useSync and not useRole and useSwipe and hasPokemonWithMove("False Swipe") and hasPokemonWithMove("False Swipe") ~= 1 then
+	if isNight() and hasSync(syncNatureNight) and hasSync(syncNatureNight) ~= 1 then
 		return false
 	end
 	return true
 end
 
 local function isTeamUsable()
-	if useSync and not hasUsableSync(syncNature) then
+	
+	if isMorning() and not hasUsableSync(syncNatureMorning) then
 		return false
-		
+	
+	
+	elseif isNoon() and not hasUsableSync(syncNatureDay) then
+		return false
+	
+	
+	elseif isNight() and not hasUsableSync(syncNatureNight) then
+		return false
+
 	
 	elseif useRole and not hasUsablePokemonWithMove("Role Play") then
 		return false
@@ -333,23 +385,74 @@ local function isTeamUsable()
 	end
 end
 
-local function goToPath()
-	if getMapName() == location then
-		if grass then
-			if moveToGrass() then return end
-		elseif water then
-			if moveToWater() then return end
-		elseif cave then
-			if moveToRectangle(caveRectangle[1],caveRectangle[2],caveRectangle[3],caveRectangle[4]) then return end
-		elseif fish then
-			if isOnCell(fishCell[1],fishCell[2]) then
+local function morningPath()
+	if getMapName() == locationMorning then
+		if grassMorning == true then
+			moveToGrass()
+		elseif waterMorning == true then
+			moveToWater()
+		elseif caveMorning == true then
+			moveToRectangle(caveRectangleMorning[1],caveRectangleMorning[2],caveRectangleMorning[3],caveRectangleMorning[4])
+		elseif fishMorning == true then
+			if isOnCell(fishingCellMorning[1], fishingCellMorning[2]) then
 				if useItem(typeRod) then return end
 			else
-				moveToCell(fishCell[1],fishCell[2])
+				moveToCell(fishingCellMorning[1], fishingCellMorning[2])
 			end
 		end
-	else pf.MoveTo(location)
+	else pf.MoveTo(locationMorning)
 	end	
+end
+
+local function dayPath()
+	if getMapName() == locationDay then
+		if grassDay == true then
+			moveToGrass()
+		elseif waterDay == true then
+			moveToWater()
+		elseif caveDay == true then
+			return moveToRectangle(caveRectangleDay[1],caveRectangleDay[2],caveRectangleDay[3],caveRectangleDay[4])
+		elseif fishDay == true then
+			if isOnCell(fishingCellDay[1], fishingCellDay[2]) then
+				if useItem(typeRod) then return end
+			else
+				moveToCell(fishingCellDay[1], fishingCellDay[2])
+			end
+		end
+	else pf.MoveTo(locationDay)
+	end	
+end
+
+local function nightPath()
+	if getMapName() == locationNight then
+		if grassNight == true then
+			moveToGrass()
+		elseif waterNight == true then
+			moveToWater()
+		elseif caveNight == true then
+			return moveToRectangle(caveRectangleNight[1], caveRectangleNight[2], caveRectangleNight[3], caveRectangleNight[4])
+		elseif fishNight == true then
+			if isOnCell(fishingCellNight[1], fishingCellNight[2]) then
+				if useItem(typeRod) then return end
+			else
+				moveToCell(fishingCellNight[1], fishingCellNight[2])
+			end
+		end
+	else 
+		pf.MoveTo(locationNight)
+	end	
+end
+
+local function goToPath()
+	if isMorning() then
+		morningPath()
+	end
+	if isNoon() then
+		dayPath()
+	end
+	if isNight() then
+		nightPath()
+	end
 end
 
 local function startRole()
@@ -425,12 +528,6 @@ end
 function onPathAction()
 usedRole = false
 roleMatched = false
-
-	if useLeftovers then
-		if leftovers() then
-			return true
-		end
-	end
 		
 	if isTeamSorted() then
 		if isTeamUsable() then
@@ -444,11 +541,34 @@ roleMatched = false
 end
 
 function onBattleAction()
-	if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
-		startRole()
-	elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatch) or (catchNotCaught and not isAlreadyCaught()) then
-		startBattle()
-	else
-		return run() or sendUsablePokemon() 
+	
+	if isMorning() then
+		if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
+			startRole()
+		elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatchMorning) or (catchNotCaught and not isAlreadyCaught()) or (hasUsablePokemonWithMove("Role Play") and isOnList(pokemonToRole)) then
+			startBattle()
+		else
+			return run() or sendUsablePokemon() 
+		end
+	end	
+	
+	if isNoon() then
+		if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
+			startRole()
+		elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatchDay) or (catchNotCaught and not isAlreadyCaught()) or (hasUsablePokemonWithMove("Role Play") and isOnList(pokemonToRole)) then
+			startBattle()
+		else
+			return run() or sendUsablePokemon() 
+		end
+	end
+	
+	if isNight() then
+		if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
+			startRole()
+		elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatchNight) or (catchNotCaught and not isAlreadyCaught()) or (hasUsablePokemonWithMove("Role Play") and isOnList(pokemonToRole)) then
+			startBattle()
+		else
+			return run() or sendUsablePokemon() 
+		end
 	end
 end
