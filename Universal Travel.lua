@@ -29,7 +29,7 @@ description = "Press Start."
 --Pokecenter Fortree City       --Pokecenter Mossdeep City     --Pokecenter Rustboro City     --Pokemon League Hoenn
 --
 
-local location = "Vermilion Pokecenter"
+local location = ""
 
 local goToNearestPokecenter = false  --set true to use the nearest pokecenter
 
@@ -48,14 +48,9 @@ local autoEvolve = "off"
 				--#################################################--
 
 
-name = "Universal Travel"
-author= "Crazy3001"
-description = "Travel to " .. location .. ". Press Start."
-
 local pf = require "Pathfinder/MoveToApp"
-local lib = require "Pathfinder/Lib/lib"
 
-function onStart()
+local function onStart()
     shinyCounter = 0
     catchCounter = 0
     wildCounter = 0
@@ -78,11 +73,11 @@ function onStart()
 	end
 end
 
-function onPause()
+local function onPause()
 	log("***********************************PAUSED************************************")
 end
 
-function onResume()
+local function onResume()
 	log("***********************************RESUMED***********************************")
  	if goToNearestPokecenter == true then
 		log("Travelling to " .. getMapName(goToNearestPokecenter) .. ".")
@@ -91,7 +86,7 @@ function onResume()
 	end
 end
 
-function onBattleMessage(wild)
+local function onBattleMessage(wild)
     if stringContains(wild, "A Wild SHINY ") then
        shinyCounter = shinyCounter + 1
        wildCounter = wildCounter + 1
@@ -111,7 +106,7 @@ function onBattleMessage(wild)
 	  end
 end
 
-function onBattleMessage(message)
+local function onBattleMessage(message)
     if message == "You failed to run away!" then
         failedRun = true
     end

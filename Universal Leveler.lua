@@ -10,7 +10,7 @@ author = "Crazy3001"
 --Victory Road Kanto 3F
 
 --Auto Evolve on or off.--
-local autoEvolve = "off" 	
+local autoEvolve = "on" 	
 
 --Case Sensitive--
 --Put the name of the map you want to train at between "". {Example: location = "Route 121"}
@@ -75,7 +75,7 @@ description = "Training at " .. location .. "." .. " Leveling pokemon to level "
 
 local pf = require "PathFinder/MoveToApp"
 
-function onStart()
+local function onStart()
    healCounter = 0
    shinyCounter = 0
    catchCounter = 0
@@ -95,7 +95,7 @@ function onStart()
 	end
 end
 
-function onPause()
+local function onPause()
    log("***********************************PAUSED - SESSION STATS***********************************")
    log("Shinies Caught: " .. shinyCounter)
    log("Pokemon Caught: " .. catchCounter)
@@ -104,18 +104,18 @@ function onPause()
    log("*********************************************************************************************")
 end
 
-function onResume()
+local function onResume()
    log("SESSION RESUMED")
 end
 
-function onDialogMessage(pokecenter)
+local function onDialogMessage(pokecenter)
     if stringContains(pokecenter, "There you go, take care of them!") then
 		healCounter = healCounter + 1
 		log("You have visited the PokeCenter ".. healCounter .." times.")
     end
 end
 
-function onBattleMessage(wild)
+local function onBattleMessage(wild)
     if stringContains(wild, "A Wild SHINY ") then
        shinyCounter = shinyCounter + 1
        wildCounter = wildCounter + 1
@@ -137,13 +137,13 @@ function onBattleMessage(wild)
     end
 end
 
-function TableLength(T)
+local function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-function isOnList(List)
+local function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -155,18 +155,18 @@ function isOnList(List)
     return result
 end
 
-function isOnCell(X, Y)
+local function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-function onLearningMove(moveName, pokemonIndex)
+local function onLearningMove(moveName, pokemonIndex)
    forgetAnyMoveExcept(movesNotToForget)
 end
 
-function ReturnHighestIndexUnderLevel()
+local function ReturnHighestIndexUnderLevel()
   result = 0
   for i=1, getTeamSize(), 1 do
       if getPokemonLevel(i) < levelPokesTo then
@@ -176,7 +176,7 @@ function ReturnHighestIndexUnderLevel()
   return result
 end
 
-function getFirstUsablePokemon()
+local function getFirstUsablePokemon()
 	for i=1, getTeamSize(), 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
 			return i
@@ -185,7 +185,7 @@ function getFirstUsablePokemon()
 	return 0
 end
 
-function getTotalUsablePokemonCount()
+local function getTotalUsablePokemonCount()
 	local count = 0
 	for i=1, getTeamSize(), 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) < levelPokesTo then
@@ -195,7 +195,7 @@ function getTotalUsablePokemonCount()
 	return count
 end
 
-function isSorted()
+local function isSorted()
 	local pokemonsUsable = getTotalUsablePokemonCount()
 	for pokemonId=1, pokemonsUsable, 1 do
 		if not isPokemonUsable(pokemonId) or getPokemonLevel(pokemonId) >= levelPokesTo then --Move it at bottom of the Team
@@ -214,7 +214,7 @@ function isSorted()
 	return false
 end
 
-function sendUsablePokemonAboveLevel()
+local function sendUsablePokemonAboveLevel()
 	for i=1, numberPokemonUsed, 1 do
 		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel then
 			sendPokemon(i)
@@ -224,7 +224,7 @@ function sendUsablePokemonAboveLevel()
 	return 0
 end
 
-function getPokemonIdWithItem(ItemName)	
+local function getPokemonIdWithItem(ItemName)	
 	for i=1, getTeamSize(), 1 do
 		if getPokemonHeldItem(i) == ItemName then
 			return i
@@ -233,7 +233,7 @@ function getPokemonIdWithItem(ItemName)
 	return 0
 end
 
-function leftovers()
+local function leftovers()
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = getFirstUsablePokemon()
 	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
@@ -260,7 +260,7 @@ function leftovers()
 	end
 end
 
-function allPokemonAboveLevel()
+local function allPokemonAboveLevel()
 	local count = 0
 	for i=1, getTeamSize(), 1 do
 		if getPokemonLevel(i) >= levelPokesTo then
@@ -268,6 +268,13 @@ function allPokemonAboveLevel()
 		end
 	end
 	if count == getTeamSize() then
+		return true
+	end
+	return false
+end
+
+local function isUsable(Index)
+	if getPokemonHealth(Index) >= 1 and getPokemonLevel(Index) < levelPokesTo then
 		return true
 	end
 	return false
@@ -312,13 +319,6 @@ canNotSwitch = false
 	end
 end
 
-function isUsable(Index)
-	if getPokemonHealth(Index) >= 1 and getPokemonLevel(Index) < levelPokesTo then
-		return true
-	end
-	return false
-end
-
 function onBattleAction()
 	if isWildBattle() and isOpponentShiny() or isOnList(catchThesePokemon) or (catchNotCaught and not isAlreadyCaught()) then
 		if isPokemonUsable(getActivePokemonNumber()) then
@@ -342,7 +342,11 @@ function onBattleAction()
 				return attack() or sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
 			end
 		else
-			return sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
+			if getTotalUsablePokemonCount() >= 1 then
+				return sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
+			else
+				return sendAnyPokemon() or run()
+			end
 		end
 	else
 		run()

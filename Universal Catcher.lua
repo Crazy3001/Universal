@@ -7,7 +7,7 @@ description = "Make sure your configuration is done properly. Press Start."
 				-------------------GLOBAL SETTINGS-------------------
 				--#################################################--
 
---If you want to catch the same pokemon all day, set true
+
 local allDayCatch = true
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
@@ -19,18 +19,17 @@ local throwHealth = 20
 --If fishing, what type of rod to use. (Old Rod, Good Rod, Super Rod)
 local typeRod = "Super Rod"
 --##########################################################################################
---If you want to use Role Play, set true.
+--If set true, if you have Leftovers, it will automatically put it on your lead Pokemon.--
+local useLeftovers = true
+--##########################################################################################
 local useRole = false
 --If using Role Play, put in the abilities you want to catch. If not using, put "". You can have multiple Abilities/multiple Pokemon. Example: roleAbility = {"Ability 1", "Ability 2", "Ability 3"}
 local roleAbility = {""}
 --If using Role Play, put in the pokemon you want to Role. If not using, put "". You can have multiple Pokemon. Example: pokemonToRole = {"Pokemon 1", "Pokemon 2"}
 local pokemonToRole = {""}
 --##########################################################################################
---If you want to use False Swipe, set true.
 local useSwipe = true
 --##########################################################################################
---If you want to use a status move, set true.
---Status moves are: "glare", "stun spore", "thunder wave", "hypnosis", "lovely kiss", "sing", "sleep spore", "spore"
 local useStatus = true
 --##########################################################################################
 --{Auto Evovle off or on.}
@@ -57,7 +56,7 @@ local caveRectangle = {1,2,3,4}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCell = {1,2}
 --##########################################################################################
-local useSync = true
+local useSync = false
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
 local syncNature = ""
 
@@ -68,7 +67,7 @@ local syncNature = ""
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatchMorning = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatchMorning = {} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --Location you want to hunt. Example: location = "Dragons Den"
 local locationMorning = ""
@@ -82,7 +81,7 @@ local caveRectangleMorning = {1,2,3,4}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCellMorning = {1,2}
 --##########################################################################################
-local useSyncMorning = true
+local useSyncMorning = false
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
 local syncNatureMorning = ""
 
@@ -93,7 +92,7 @@ local syncNatureMorning = ""
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatchDay = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatchDay = {} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --Location you want to hunt. Example: location = "Dragons Den"
 local locationDay = ""
@@ -107,7 +106,7 @@ local caveRectangleDay = {1,2,3,4}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCellDay = {1,2}
 --##########################################################################################
-local useSyncDay = true
+local useSyncDay = false
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
 local syncNatureDay = ""
 
@@ -132,9 +131,9 @@ local caveRectangleNight = {1,2,3,4}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCellNight = {1,2}
 --##########################################################################################
-local useSyncNight = true
+local useSyncNight = false
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNatureNight = ""
+local syncNatureNight = "Timid"
 
 
 				--#################################################--
@@ -157,9 +156,8 @@ local typeBall = "Pokeball"
 				
 
 local pf = require "Pathfinder/MoveToApp"
-local lib = require "Pathfinder/Lib/lib"
 
-function onStart()
+local function onStart()
 local syncId = hasSync(syncNature)
 healCounter = 0
 shinyCounter = 0
@@ -181,7 +179,7 @@ wildCounter = 0
 	log("****************************************BOT STARTED*****************************************")
 end
 
-function onPause()
+local function onPause()
 	log("***********************************PAUSED - SESSION STATS***********************************")
     log("You have visited the PokeCenter " .. healCounter .. " times.")
     log("Pokemon Encountered: " .. wildCounter)
@@ -190,18 +188,18 @@ function onPause()
     log("********************************************************************************************")
 end
 
-function onResume()
+local function onResume()
 	log("****************************************BOT RESUMED*****************************************")
 end
 
-function onDialogMessage(message)
+local function onDialogMessage(message)
     if stringContains(message, "There you go, take care of them!") then
 		healCounter = healCounter + 1
 		log("You have visited the PokeCenter ".. healCounter .." times.")
     end
 end
 
-function onBattleMessage(wild)
+local function onBattleMessage(wild)
 	if stringContains(wild, "A Wild SHINY ") then
 		shinyCounter = shinyCounter + 1
 		wildCounter = wildCounter + 1
@@ -228,13 +226,13 @@ function onBattleMessage(wild)
 	end
 end
 
-function TableLength(T)
+local function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-function isOnList(List)
+local function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -246,14 +244,14 @@ function isOnList(List)
     return result
 end
 
-function isOnCell(X, Y)
+local function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-function hasUsablePokemonWithMove(Move)
+local function hasUsablePokemonWithMove(Move)
 	local hasUsablePokemonWithMove = {}
 	hasUsablePokemonWithMove["id"] = 0
 	hasUsablePokemonWithMove["move"] = nil
@@ -278,7 +276,7 @@ function hasUsablePokemonWithMove(Move)
 	return false
 end
 
-function hasPokemonWithMove(Move)
+local function hasPokemonWithMove(Move)
 	local hasPokemonWithMove = {}
 	hasPokemonWithMove["id"] = 0
 	hasPokemonWithMove["move"] = nil
@@ -303,7 +301,7 @@ function hasPokemonWithMove(Move)
 	return false
 end
 
-function hasUsableSync(Nature)
+local function hasUsableSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature and getPokemonHealth(i) >= 1 then
             return i, true
@@ -312,7 +310,7 @@ function hasUsableSync(Nature)
     return 0, false
 end
 
-function hasSync(Nature)
+local function hasSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature then
             return i, true
@@ -321,7 +319,7 @@ function hasSync(Nature)
     return 0, false
 end
 
-function sortTeam()
+local function sortTeam()
 	if allDayCatch and useSync and hasSync(syncNature) then
 		if hasSync(syncNature) == 1 then
 			return true
@@ -356,7 +354,7 @@ function sortTeam()
 	return false
 end
 
-function isTeamSorted()
+local function isTeamSorted()
 	if allDayCatch and hasSync(syncNature) and hasSync(syncNature) ~= 1 then
 		return false
 	end
@@ -372,7 +370,7 @@ function isTeamSorted()
 	return true
 end
 
-function isTeamUsable()
+local function isTeamUsable()
 	if allDayCatch and useSync and not hasUsableSync(syncNature) then
 		return false
 	
@@ -401,7 +399,7 @@ function isTeamUsable()
 	end
 end
 
-function allDayPath()
+local function allDayPath()
 	if getMapName() == location then
 		if huntIn == grass then
 			moveToGrass()
@@ -423,7 +421,7 @@ function allDayPath()
 	end	
 end
 
-function morningPath()
+local function morningPath()
 	if getMapName() == locationMorning then
 		if grassMorning == true then
 			moveToGrass()
@@ -442,7 +440,7 @@ function morningPath()
 	end	
 end
 
-function dayPath()
+local function dayPath()
 	if getMapName() == locationDay then
 		if grassDay == true then
 			moveToGrass()
@@ -461,7 +459,7 @@ function dayPath()
 	end	
 end
 
-function nightPath()
+local function nightPath()
 	if getMapName() == locationNight then
 		if grassNight == true then
 			moveToGrass()
@@ -481,7 +479,7 @@ function nightPath()
 	end	
 end
 
-function goToPath()
+local function goToPath()
 	if allDayCatch then
 		allDayPath()
 	else
@@ -495,6 +493,76 @@ function goToPath()
 			nightPath()
 		end
 	end
+end
+
+local function startRole()
+	if usedRole == false then
+		if hasUsablePokemonWithMove("Role Play") then
+			if getActivePokemonNumber() == hasUsablePokemonWithMove("Role Play") then
+				if useMove("Role Play") then
+					usedRole = true
+				end
+			else
+				if sendPokemon(hasUsablePokemonWithMove("Role Play")) then return end
+			end
+		else
+			startBattle()
+		end
+	else
+		if roleMatched == true then
+			startBattle()
+		else
+			run()
+		end
+	end	
+end
+
+local function startBattle()
+	if getOpponentHealthPercent() > throwHealth then	
+		if hasUsablePokemonWithMove("False Swipe") then
+			if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
+				if useMove("False Swipe") then return end
+			else
+				if sendPokemon(hasUsablePokemonWithMove("False Swipe")) then return end
+			end
+		elseif hasUsablePokemonWithMove(statusMove) then
+			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
+				if getOpponentStatus() == "None" then
+					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
+				else
+					if useItem(typeBall) then return end
+				end
+			else
+				if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
+			end
+
+		else
+			if isPokemonUsable(getActivePokemonNumber()) then
+				if weakAttack() then return end
+			else
+				if sendUsablePokemon() or sendAnyPokemon() or run() then return end
+			end
+		end
+
+	else
+		if hasUsablePokemonWithMove(statusMove) then
+			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
+				if getOpponentStatus() == "None" then
+					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
+				else
+					if useItem(typeBall) then return end
+				end
+			else
+				if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
+			end
+		else
+			if isPokemonUsable(getActivePokemonNumber()) then
+				if useItem(typeBall) then return end
+			else
+				if sendUsablePokemon() or sendAnyPokemon() or run() then return end
+			end
+		end
+	end	
 end
 
 function onPathAction()
@@ -552,74 +620,4 @@ function onBattleAction()
 			return run() or sendUsablePokemon() 
 		end
 	end
-end
-
-function startRole()
-	if usedRole == false then
-		if hasUsablePokemonWithMove("Role Play") then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove("Role Play") then
-				if useMove("Role Play") then
-					usedRole = true
-				end
-			else
-				if sendPokemon(hasUsablePokemonWithMove("Role Play")) then return end
-			end
-		else
-			startBattle()
-		end
-	else
-		if roleMatched == true then
-			startBattle()
-		else
-			run()
-		end
-	end	
-end
-
-function startBattle()
-	if getOpponentHealthPercent() > throwHealth then	
-		if hasUsablePokemonWithMove("False Swipe") then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
-				if useMove("False Swipe") then return end
-			else
-				if sendPokemon(hasUsablePokemonWithMove("False Swipe")) then return end
-			end
-		elseif hasUsablePokemonWithMove(statusMove) then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
-				if getOpponentStatus() == "None" then
-					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
-				else
-					if useItem(typeBall) then return end
-				end
-			else
-				if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
-			end
-
-		else
-			if isPokemonUsable(getActivePokemonNumber()) then
-				if weakAttack() then return end
-			else
-				if sendUsablePokemon() or sendAnyPokemon() or run() then return end
-			end
-		end
-
-	else
-		if hasUsablePokemonWithMove(statusMove) then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
-				if getOpponentStatus() == "None" then
-					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
-				else
-					if useItem(typeBall) then return end
-				end
-			else
-				if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
-			end
-		else
-			if isPokemonUsable(getActivePokemonNumber()) then
-				if useItem(typeBall) then return end
-			else
-				if sendUsablePokemon() or sendAnyPokemon() or run() then return end
-			end
-		end
-	end	
 end
