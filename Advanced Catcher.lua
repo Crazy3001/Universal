@@ -177,13 +177,13 @@ function onBattleMessage(wild)
 	end
 end
 
-local function TableLength(T)
+function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-local function isOnList(List)
+function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -195,14 +195,14 @@ local function isOnList(List)
     return result
 end
 
-local function isOnCell(X, Y)
+function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-local function hasUsablePokemonWithMove(Move)
+function hasUsablePokemonWithMove(Move)
 	local hasUsablePokemonWithMove = {}
 	hasUsablePokemonWithMove["id"] = 0
 	hasUsablePokemonWithMove["move"] = nil
@@ -227,7 +227,7 @@ local function hasUsablePokemonWithMove(Move)
 	return false
 end
 
-local function hasPokemonWithMove(Move)
+function hasPokemonWithMove(Move)
 	local hasPokemonWithMove = {}
 	hasPokemonWithMove["id"] = 0
 	hasPokemonWithMove["move"] = nil
@@ -252,7 +252,7 @@ local function hasPokemonWithMove(Move)
 	return false
 end
 
-local function hasUsableSync(Nature)
+function hasUsableSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature and getPokemonHealth(i) >= 1 then
             return i, true
@@ -261,7 +261,7 @@ local function hasUsableSync(Nature)
     return 0, false
 end
 
-local function hasSync(Nature)
+function hasSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature then
             return i, true
@@ -270,7 +270,7 @@ local function hasSync(Nature)
     return 0, false
 end
 
-local function sortTeam()
+function sortTeam()
 	
 	if isMorning() and useSyncMorning and hasSync(syncNatureMorning) then
 		if hasSync(syncNatureMorning) == 1 then
@@ -346,7 +346,7 @@ local function sortTeam()
 	return false
 end
 
-local function isTeamSorted()
+function isTeamSorted()
 	if isMorning() and hasSync(syncNatureMorning) and hasSync(syncNatureMorning) ~= 1 then
 		return false
 	end
@@ -359,7 +359,7 @@ local function isTeamSorted()
 	return true
 end
 
-local function isTeamUsable()
+function isTeamUsable()
 	
 	if isMorning() and not hasUsableSync(syncNatureMorning) then
 		return false
@@ -385,7 +385,7 @@ local function isTeamUsable()
 	end
 end
 
-local function morningPath()
+function morningPath()
 	if getMapName() == locationMorning then
 		if grassMorning == true then
 			moveToGrass()
@@ -404,7 +404,7 @@ local function morningPath()
 	end	
 end
 
-local function dayPath()
+function dayPath()
 	if getMapName() == locationDay then
 		if grassDay == true then
 			moveToGrass()
@@ -423,7 +423,7 @@ local function dayPath()
 	end	
 end
 
-local function nightPath()
+function nightPath()
 	if getMapName() == locationNight then
 		if grassNight == true then
 			moveToGrass()
@@ -443,7 +443,7 @@ local function nightPath()
 	end	
 end
 
-local function goToPath()
+function goToPath()
 	if isMorning() then
 		morningPath()
 	end

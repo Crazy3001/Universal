@@ -189,13 +189,13 @@ function getTableValuesZero(T)
 	return tab
 end
 
-local function TableLength(T)
+function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-local function isOnList(List)
+function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -207,14 +207,14 @@ local function isOnList(List)
     return result
 end
 
-local function isOnCell(X, Y)
+function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-local function hasUsablePokemonWithMove(Move)
+function hasUsablePokemonWithMove(Move)
 	local hasUsablePokemonWithMove = {}
 	hasUsablePokemonWithMove["id"] = 0
 	hasUsablePokemonWithMove["move"] = nil
@@ -239,7 +239,7 @@ local function hasUsablePokemonWithMove(Move)
 	return false
 end
 
-local function hasPokemonWithMove(Move)
+function hasPokemonWithMove(Move)
 	local hasPokemonWithMove = {}
 	hasPokemonWithMove["id"] = 0
 	hasPokemonWithMove["move"] = nil
@@ -264,7 +264,7 @@ local function hasPokemonWithMove(Move)
 	return false
 end
 
-local function hasUsableSync(Nature)
+function hasUsableSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature and getPokemonHealth(i) >= 1 then
             return i, true
@@ -273,7 +273,7 @@ local function hasUsableSync(Nature)
     return 0, false
 end
 
-local function hasSync(Nature)
+function hasSync(Nature)
     for i=1, getTeamSize(), 1 do
         if getPokemonAbility(i) == "Synchronize" and getPokemonNature(i) == Nature then
             return i, true
@@ -282,7 +282,7 @@ local function hasSync(Nature)
     return 0, false
 end
 
-local function getPokemonIdWithItem(ItemName)	
+function getPokemonIdWithItem(ItemName)	
 	for i=1, getTeamSize(), 1 do
 		if getPokemonHeldItem(i) == ItemName then
 			return i
@@ -300,7 +300,7 @@ local function getFirstUsablePokemon()
 	return 0
 end
 
-local function leftovers()
+function leftovers()
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = getFirstUsablePokemon()
 	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
@@ -327,7 +327,7 @@ local function leftovers()
 	end
 end
 
-local function sortTeam()
+function sortTeam()
 	if useSync and hasSync(syncNature) then
 		if hasSync(syncNature) == 1 then
 			return true
@@ -352,7 +352,7 @@ local function sortTeam()
 	return false
 end
 
-local function isTeamSorted()
+function isTeamSorted()
 	if useSync and hasSync(syncNature) and hasSync(syncNature) ~= 1 then
 		return false
 	end
@@ -365,7 +365,7 @@ local function isTeamSorted()
 	return true
 end
 
-local function isTeamUsable()
+function isTeamUsable()
 	if useSync and not hasUsableSync(syncNature) then
 		return false
 		

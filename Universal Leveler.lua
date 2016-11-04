@@ -7,6 +7,7 @@ author = "Crazy3001"
 --Favorites:
 --Seafoam B4F (56,14,61,14)
 --Dragons Den
+--Victory Road Kanto 3F
 
 
 --Case Sensitive--
