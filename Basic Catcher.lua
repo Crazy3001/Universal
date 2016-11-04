@@ -25,6 +25,8 @@ local typeRod = "Super Rod"
 --##########################################################################################
 --If set true, if you have Leftovers, it will give it to your lead Pokemon.--
 local useLeftovers = true
+--##########################################################################################
+
 
 
 				--#################################################--
@@ -83,13 +85,40 @@ local useStatus = true
 				
 
 local pf = require "Pathfinder/MoveToApp"
-
 function onStart()
 healCounter = 0
 shinyCounter = 0
 catchCounter = 0
 wildCounter = 0
-
+pokeFound = getTableValuesZero(pokemonToCatch)
+	log("###############################################################################################")
+	log("Pokedollars: "..getMoney())
+	log(typeBall.."s: "..tostring(getItemQuantity(typeBall)))
+	log("Hunting at "..location)
+	log("Catching:")
+	for _,value in pairs(pokemonToCatch) do
+		log(value)
+	end
+	if useSync then
+		log("Using "..syncNature.." Sync")
+	end
+	if useRole then
+		log("Using Role Play")
+		log("Pokemon to Role:")
+		for _,value in pairs(pokemonToRole) do
+			log(value)
+		end
+		log("Abilities to look for when using Role:")
+		for _,value in pairs(roleAbility) do
+			log(value)
+		end		
+	end
+	if useSwipe then
+		log("Using False Swipe")
+	end	
+	if useStatus then
+		log("Using Status Move")
+	end
 	log("****************************************BOT STARTED*****************************************")
 end
 
@@ -138,6 +167,26 @@ function onBattleMessage(wild)
 			break
 		end
 	end
+	found = false
+	for _,value in pairs(pokemonToCatch) do
+		if wild == "A Wild [FF9900]"..value.."[-] Attacks!" then
+			pokeFound[value] = pokeFound[value] + 1
+			found = true
+			break
+		end
+	end
+end
+
+function getTableValues(T)
+	local tab = {}
+	for _, v in pairs(T) do tab[v] = true end
+	return tab
+end
+
+function getTableValuesZero(T)
+	local tab = {}
+	for _, v in pairs(T) do tab[v] = 0 end
+	return tab
 end
 
 local function TableLength(T)
@@ -333,7 +382,7 @@ local function isTeamUsable()
 	end
 end
 
-local function goToPath()
+function goToPath()
 	if getMapName() == location then
 		if grass then
 			if moveToGrass() then return end
@@ -352,7 +401,7 @@ local function goToPath()
 	end	
 end
 
-local function startRole()
+function startRole()
 	if usedRole == false then
 		if hasUsablePokemonWithMove("Role Play") then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove("Role Play") then
@@ -374,15 +423,15 @@ local function startRole()
 	end	
 end
 
-local function startBattle()
+function startBattle()
 	if getOpponentHealthPercent() > throwHealth then	
-		if hasUsablePokemonWithMove("False Swipe") then
+		if useSwipe and hasUsablePokemonWithMove("False Swipe") then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
 				if useMove("False Swipe") then return end
 			else
 				if sendPokemon(hasUsablePokemonWithMove("False Swipe")) then return end
 			end
-		elseif hasUsablePokemonWithMove(statusMove) then
+		elseif useStatus and hasUsablePokemonWithMove(statusMove) then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
 				if getOpponentStatus() == "None" then
 					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
@@ -402,7 +451,7 @@ local function startBattle()
 		end
 
 	else
-		if hasUsablePokemonWithMove(statusMove) then
+		if useStatus and hasUsablePokemonWithMove(statusMove) then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
 				if getOpponentStatus() == "None" then
 					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
@@ -444,7 +493,7 @@ roleMatched = false
 end
 
 function onBattleAction()
-	if isWildBattle() and isOnList(pokemonToRole) and hasUsablePokemonWithMove("Role Play") then
+	if isWildBattle() and isOnList(pokemonToRole) and useRole and hasUsablePokemonWithMove("Role Play") then
 		startRole()
 	elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatch) or (catchNotCaught and not isAlreadyCaught()) then
 		startBattle()
