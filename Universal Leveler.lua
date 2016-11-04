@@ -175,7 +175,7 @@ end
 local function getTotalPokemonToLevelCount()
 	local count = 0
 	for i=1, getTeamSize(), 1 do
-		if isPokemonUsable(i) and getPokemonLevel(i) < levelPokesTo then
+		if getPokemonHealth(i) >= 1 and getPokemonLevel(i) < levelPokesTo then
 			count = count + 1
 		end
 	end
@@ -232,7 +232,7 @@ local function leftovers()
 end
 
 local function isSorted()
-	local pokemonsUsable = getTotalUsablePokemonCount()
+	local pokemonsUsable = getTotalPokemonToLevelCount()
 	for pokemonId=1, pokemonsUsable, 1 do
 		if not isPokemonUsable(pokemonId) or getPokemonLevel(pokemonId) >= levelPokesTo then --Move it at bottom of the Team
 			for pokemonId_ = pokemonsUsable + 1, getTeamSize(), 1 do
@@ -264,7 +264,7 @@ canNotSwitch = false
 	end
 	
 	if not allPokemonReachedTargetLevel() then
-		if getTotalUsablePokemonCount() >= 1 and getPokemonHealthPercent(getTotalUsablePokemonCount()) >= healthToRunAt then 
+		if getTotalPokemonToLevelCount() >= 1 and getPokemonHealthPercent(getTotalPokemonToLevelCount()) >= healthToRunAt then 
 			if getMapName() == location then
 				if lookForGrass then
 					if moveToGrass() then return end
@@ -301,7 +301,7 @@ function onBattleAction()
 	end
 	if isWildBattle() and not isOnList(evadeThesePokemon) then
 		if isPokemonUsable(getActivePokemonNumber()) then
-			if getTotalUsablePokemonCount() < 1 or getPokemonHealthPercent(getTotalPokemonToLevelCount()) < healthToRunAt then
+			if getTotalPokemonToLevelCount() < 1 or getPokemonHealthPercent(getTotalPokemonToLevelCount()) < healthToRunAt then
 				return run()
 			elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
 				if getTotalUsablePokemonCount() >= 1 then
