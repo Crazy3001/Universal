@@ -455,7 +455,7 @@ local function goToPath()
 	end
 end
 
-local function startRole()
+function startRole()
 	if usedRole == false then
 		if hasUsablePokemonWithMove("Role Play") then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove("Role Play") then
@@ -477,7 +477,7 @@ local function startRole()
 	end	
 end
 
-local function startBattle()
+function startBattle()
 	if getOpponentHealthPercent() > throwHealth then	
 		if hasUsablePokemonWithMove("False Swipe") then
 			if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
