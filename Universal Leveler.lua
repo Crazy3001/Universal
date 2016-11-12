@@ -20,14 +20,11 @@ local catchNotCaught = true
 --the below is case-sensitive, add more moves by adding commas. example : catchThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
 --Even if you set all other capture variables to false, we'll still try to catch these/this pokemon--
 --Leave an empty "" here if you aren't using it--
-local catchThesePokemon = {""}
+local catchThesePokemon = {}
 
 --When leveling, if there are any Pokemon you do not want to fight, put them in here. Example : evadeThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
 --Leave an empty "" here if you aren't using it--
-local evadeThesePokemon = {""}
-
---Will only level the pokemon in the first # slots. If they are below minLevel, if you have any level 100 pokemon in your team, they will fight for them (exp share).
-local numberPokemonToLevel = 6
+local evadeThesePokemon = {}
 	
 --Will level your pokemon to this level then stop. Put 101 if EV Training or if you want level 100 Pokemon to fight.--
 local levelPokesTo = 100
@@ -124,13 +121,13 @@ function onBattleMessage(wild)
     end
 end
 
-function TableLength(T)
+local function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-function isOnList(List)
+local function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -142,34 +139,45 @@ function isOnList(List)
     return result
 end
 
-function isOnCell(X, Y)
+local function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-function onLearningMove(moveName, pokemonIndex)
+local function onLearningMove(moveName, pokemonIndex)
    forgetAnyMoveExcept(movesNotToForget)
 end
 
-function getFirstUsablePokemon()
-	for i=1, numberPokemonToLevel, 1 do
-		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
+local function getFirstUsablePokemon()
+	for i=1, getTeamSize(), 1 do
+		if isPokemonUsable(i) and (getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo) or getPokemonLevel(i) == 100 then
 			return i		
 		end
 	end
 	return 0
 end
 
-function getTotalUsablePokemonCount()
+local function getTotalUsablePokemonCount()
 	local count = 0
-	for i=1, numberPokemonToLevel, 1 do
-		if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
+	for i=1, getTeamSize(), 1 do
+		if isPokemonUsable(i) and (getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo) then
 			count = count + 1
 		end
 	end
 	return count
+end
+
+function isLastUsablePokemon()
+	if getTotalUsablePokemonCount() == 1 then
+		for i=1, getTeamSize(), 1 do
+			if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
+				return i, true
+			end
+		end
+	end
+	return false
 end
 
 function getFirstMaxLevelPokemon()
@@ -191,20 +199,9 @@ function getTotalMaxLevelPokemonCount()
 	return count
 end
 
-function isLastUsablePokemon()
-	if getTotalUsablePokemonCount() == 1 then
-		for i=1, numberPokemonToLevel, 1 do
-			if isPokemonUsable(i) and getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo then
-				return i, true
-			end
-		end
-	end
-	return false
-end
-
-function getTotalPokemonToLevelCount()
+local function getTotalPokemonToLevelCount()
 	local count = 0
-	for i=1, numberPokemonToLevel, 1 do
+	for i=1, getTeamSize(), 1 do
 		if getPokemonHealth(i) >= 1 and getPokemonLevel(i) < levelPokesTo then
 			count = count + 1
 		end
@@ -212,20 +209,20 @@ function getTotalPokemonToLevelCount()
 	return count
 end
 
-function allPokemonReachedTargetLevel()
+local function allPokemonReachedTargetLevel()
 	local count = 0
-	for i=1, numberPokemonToLevel, 1 do
+	for i=1, getTeamSize(), 1 do
 		if getPokemonLevel(i) >= levelPokesTo then
 			count = count + 1
 		end
 	end
-	if count == numberPokemonToLevel then
+	if count == getTeamSize() then
 		return true
 	end
 	return false
 end
 
-function getPokemonIdWithItem(ItemName)	
+local function getPokemonIdWithItem(ItemName)	
 	for i=1, getTeamSize(), 1 do
 		if getPokemonHeldItem(i) == ItemName then
 			return i
@@ -245,7 +242,7 @@ function getPokemonNeedLeftovers()
 	return 0
 end
 
-function leftovers()
+local function leftovers()
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = getPokemonNeedLeftovers() 
 	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
@@ -272,11 +269,11 @@ function leftovers()
 	end
 end
 
-function isSorted()
+local function isSorted()
 	local pokemonsUsable = getTotalPokemonToLevelCount()
 	for pokemonId=1, pokemonsUsable, 1 do
 		if not isPokemonUsable(pokemonId) or getPokemonLevel(pokemonId) >= levelPokesTo then --Move it at bottom of the Team
-			for pokemonId_ = pokemonsUsable + 1, numberPokemonToLevel, 1 do
+			for pokemonId_ = pokemonsUsable + 1, getTeamSize(), 1 do
 				if isPokemonUsable(pokemonId_) then
 					swapPokemon(pokemonId, pokemonId_)
 					return true
@@ -292,7 +289,7 @@ function isSorted()
 end
 
 function onPathAction()
-map = getMapName()
+local map = getMapName()
 canNotSwitch = false
 
 	if isSorted() then 
@@ -306,7 +303,7 @@ canNotSwitch = false
 	end
 	
 	if not allPokemonReachedTargetLevel() then
-		if getTotalPokemonToLevelCount() >= 1 or (isLastUsablePokemon() and getPokemonHealthPercent(isLastUsablePokemon()) > healthToRunAt) then 
+		if getTotalPokemonToLevelCount() >= 1 and getPokemonHealthPercent(getTotalPokemonToLevelCount()) >= healthToRunAt then 
 			if getMapName() == location then
 				if lookForGrass then
 					if moveToGrass() then return end
@@ -343,19 +340,19 @@ function onBattleAction()
 	end
 	if isWildBattle() and not isOnList(evadeThesePokemon) then
 		if isPokemonUsable(getActivePokemonNumber()) then
-			if getTotalPokemonToLevelCount() < 1 or (isLastUsablePokemon() and getPokemonHealthPercent(isLastUsablePokemon()) <= healthToRunAt) then 
+			if getTotalPokemonToLevelCount() < 1 or getPokemonHealthPercent(getTotalPokemonToLevelCount()) < healthToRunAt then
 				return run()
 			elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
 				if getTotalUsablePokemonCount() >= 1 then
 					return sendPokemon(getFirstUsablePokemon()) 
 				elseif getTotalMaxLevelPokemonCount() >= 1 then
 					return sendPokemon(getFirstMaxLevelPokemon())
-				else
-					return sendAnyPokemon() or run()
+				else 
+					return run()
 				end
 			elseif failedRun then
 				failedRun = false
-				return sendPokemon(getFirstUsablePokemon()) or sendPokemon(getFirstMaxLevelPokemon()) or sendUsablePokemon() or attack()
+				return sendUsablePokemon() or attack()
 			else
 				return attack() or sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
 			end
@@ -365,10 +362,33 @@ function onBattleAction()
 			elseif getTotalMaxLevelPokemonCount() >= 1 then
 				return sendPokemon(getFirstMaxLevelPokemon())
 			else
-				return sendAnyPokemon() or run()
+				return sendAnyPokemon()
 			end
 		end
 	else
-		return run() or sendPokemon(getFirstUsablePokemon()) or sendPokemon(getFirstMaxLevelPokemon()) or sendAnyPokemon()
+		if isPokemonUsable(getActivePokemonNumber()) then
+			if failedRun then
+				failedRun = false
+				if getTotalUsablePokemonCount() >= 1 then
+					return sendPokemon(getFirstUsablePokemon())
+				elseif getTotalMaxLevelPokemonCount() >= 1 then
+					return sendPokemon(getFirstMaxLevelPokemon())
+				else
+					return sendAnyPokemon()
+				end
+			elseif run() or sendPokemon(getFirstUsablePokemon()) or sendPokemon(getFirstMaxLevelPokemon()) or sendAnyPokemon() then 
+				return
+			else
+				return attack() or sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
+			end
+		else
+			if getTotalUsablePokemonCount() >= 1 then
+				return sendPokemon(getFirstUsablePokemon())
+			elseif getTotalMaxLevelPokemonCount() >= 1 then
+				return sendPokemon(getFirstMaxLevelPokemon())
+			else
+				return sendAnyPokemon()
+			end
+		end
 	end
 end
