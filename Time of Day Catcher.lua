@@ -1,4 +1,4 @@
-name = "Advanced Catcher"
+name = "Time of Day Catcher"
 author = "Crazy3001"
 description = "Catch by Morning, Day and Night. Make sure your configuration is done properly. Press Start."
 
