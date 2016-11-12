@@ -121,13 +121,13 @@ function onBattleMessage(wild)
     end
 end
 
-local function TableLength(T)
+function TableLength(T)
  local count = 0
  for _ in pairs(T) do count = count + 1 end
  return count
 end
 
-local function isOnList(List)
+function isOnList(List)
 	result = false
     if List[1] ~= "" then
 	    for i=1, TableLength(List), 1 do
@@ -139,18 +139,18 @@ local function isOnList(List)
     return result
 end
 
-local function isOnCell(X, Y)
+function isOnCell(X, Y)
 	if getPlayerX() == X and getPlayerY() == Y then
 		return true
 	end
 	return false
 end
 
-local function onLearningMove(moveName, pokemonIndex)
+function onLearningMove(moveName, pokemonIndex)
    forgetAnyMoveExcept(movesNotToForget)
 end
 
-local function getFirstUsablePokemon()
+function getFirstUsablePokemon()
 	for i=1, getTeamSize(), 1 do
 		if isPokemonUsable(i) and (getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo) or getPokemonLevel(i) == 100 then
 			return i		
@@ -159,7 +159,7 @@ local function getFirstUsablePokemon()
 	return 0
 end
 
-local function getTotalUsablePokemonCount()
+function getTotalUsablePokemonCount()
 	local count = 0
 	for i=1, getTeamSize(), 1 do
 		if isPokemonUsable(i) and (getPokemonLevel(i) >= minLevel and getPokemonLevel(i) < levelPokesTo) then
@@ -199,17 +199,17 @@ function getTotalMaxLevelPokemonCount()
 	return count
 end
 
-local function getTotalPokemonToLevelCount()
+function getTotalPokemonToLevelCount()
 	local count = 0
 	for i=1, getTeamSize(), 1 do
-		if getPokemonHealth(i) >= 1 and getPokemonLevel(i) < levelPokesTo then
+		if isPokemonUsable(i) and getPokemonLevel(i) < levelPokesTo then
 			count = count + 1
 		end
 	end
 	return count
 end
 
-local function allPokemonReachedTargetLevel()
+function allPokemonReachedTargetLevel()
 	local count = 0
 	for i=1, getTeamSize(), 1 do
 		if getPokemonLevel(i) >= levelPokesTo then
@@ -222,7 +222,7 @@ local function allPokemonReachedTargetLevel()
 	return false
 end
 
-local function getPokemonIdWithItem(ItemName)	
+function getPokemonIdWithItem(ItemName)	
 	for i=1, getTeamSize(), 1 do
 		if getPokemonHeldItem(i) == ItemName then
 			return i
@@ -242,7 +242,7 @@ function getPokemonNeedLeftovers()
 	return 0
 end
 
-local function leftovers()
+function leftovers()
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = getPokemonNeedLeftovers() 
 	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
@@ -269,7 +269,7 @@ local function leftovers()
 	end
 end
 
-local function isSorted()
+function isSorted()
 	local pokemonsUsable = getTotalPokemonToLevelCount()
 	for pokemonId=1, pokemonsUsable, 1 do
 		if not isPokemonUsable(pokemonId) or getPokemonLevel(pokemonId) >= levelPokesTo then --Move it at bottom of the Team
@@ -340,7 +340,7 @@ function onBattleAction()
 	end
 	if isWildBattle() and not isOnList(evadeThesePokemon) then
 		if isPokemonUsable(getActivePokemonNumber()) then
-			if getTotalPokemonToLevelCount() < 1 or getPokemonHealthPercent(getTotalPokemonToLevelCount()) < healthToRunAt then
+			if getTotalUsablePokemonCount() < 1 or getPokemonHealthPercent(getTotalUsablePokemonCount()) < healthToRunAt then
 				return run()
 			elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
 				if getTotalUsablePokemonCount() >= 1 then
@@ -362,7 +362,7 @@ function onBattleAction()
 			elseif getTotalMaxLevelPokemonCount() >= 1 then
 				return sendPokemon(getFirstMaxLevelPokemon())
 			else
-				return sendAnyPokemon()
+				return sendAnyPokemon() or run()
 			end
 		end
 	else
