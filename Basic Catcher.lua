@@ -85,6 +85,8 @@ local useStatus = true
 				
 
 local pf = require "Pathfinder/MoveToApp"
+local map = nil
+
 function onStart()
 healCounter = 0
 shinyCounter = 0
@@ -383,6 +385,7 @@ function isTeamUsable()
 end
 
 function goToPath()
+local map = getMapName()
 	if getMapName() == location then
 		if grass then
 			if moveToGrass() then return end
@@ -397,7 +400,7 @@ function goToPath()
 				moveToCell(fishCell[1],fishCell[2])
 			end
 		end
-	else pf.MoveTo(location)
+	else pf.moveTo(map, location)
 	end	
 end
 
@@ -474,6 +477,7 @@ end
 function onPathAction()
 usedRole = false
 roleMatched = false
+local map = getMapName()
 
 	if useLeftovers then
 		if leftovers() then
@@ -485,7 +489,7 @@ roleMatched = false
 		if isTeamUsable() then
 			goToPath()
 		else
-			pf.UseNearestPokecenter()
+			pf.useNearestPokecenter(map)
 		end
 	else
 		sortTeam()

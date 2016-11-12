@@ -35,9 +35,6 @@ local levelPokesTo = 100
 --What level you want your pokemon to start fight instead of switching out.
 local minLevel = 1
 
---True = Sorts your Pokemon that are being used by level, low to high.
-local sortTeam = true
-
 --If set true, if you have Leftovers, it will automatically give it to your first usable pokemon.--
 local useLeftovers = true
 
@@ -75,6 +72,7 @@ local typeRod = "Super Rod"
 description = "Training at " .. location .. "." .. " Leveling pokemon to level " .. levelPokesTo .. ". Press Start"
 
 local pf = require "PathFinder/MoveToApp"
+local map = nil
 
 function onStart()
    healCounter = 0
@@ -294,6 +292,7 @@ function isSorted()
 end
 
 function onPathAction()
+map = getMapName()
 canNotSwitch = false
 
 	if isSorted() then 
@@ -322,10 +321,10 @@ canNotSwitch = false
 						moveToCell(fishCell[1],fishCell[2])
 					end
 				end
-			else pf.MoveTo(location)
+			else pf.moveTo(map, location)
 			end
 		else 
-			return pf.UseNearestPokecenter()
+			return pf.useNearestPokecenter(map)
 		end
 	else
 		logout()
@@ -370,6 +369,6 @@ function onBattleAction()
 			end
 		end
 	else
-		run()
+		return run() or sendPokemon(getFirstMaxLevelPokemon()) or sendAnyPokemon()
 	end
 end

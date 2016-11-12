@@ -25,7 +25,7 @@ description = "Press Start."
 --HOENN
 --Pokecenter Dewford Town       --Pokecenter Lavaridge Town    --Pokecenter Oldale Town       --Pokecenter Slateport
 --Pokecenter Ever Grande City   --Pokecenter Lilycove City     --Pokecenter Pacifidlog Town   --Pokecenter Sootopolis City
---Pokecenter Fallabor Town      --Pokecenter Mauville City     --Pokecenter Petalburg City    --Pokecenter Verdanturf
+--Pokecenter Fallarbor Town      --Pokecenter Mauville City     --Pokecenter Petalburg City    --Pokecenter Verdanturf
 --Pokecenter Fortree City       --Pokecenter Mossdeep City     --Pokecenter Rustboro City     --Pokemon League Hoenn
 --
 
@@ -49,6 +49,7 @@ local autoEvolve = "off"
 
 
 local pf = require "Pathfinder/MoveToApp"
+local map = nil
 
 function onStart()
     shinyCounter = 0
@@ -104,13 +105,14 @@ function onBattleMessage(message)
 end
 
 function onPathAction()
+local map = getMapName()
 	if goToNearestPokecenter == true then
-		pf.UseNearestPokecenter()
+		pf.useNearestPokecenter(map)
 		if getMapName(goToNearestPokecenter) == getMapName() then
 			lib.log1time("Arrived at your Destination")
 		end
 	else
-		pf.MoveTo(location)
+		pf.moveTo(map, location)
 		if getMapName() == location then
 			lib.log1time("Arrived at your Destination")
 		end

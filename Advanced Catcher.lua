@@ -120,6 +120,7 @@ local syncNatureNight = ""
 				
 
 local pf = require "Pathfinder/MoveToApp"
+local map = nil
 
 function onStart()
 healCounter = 0
@@ -386,6 +387,7 @@ function isTeamUsable()
 end
 
 function morningPath()
+local map = getMapName()
 	if getMapName() == locationMorning then
 		if grassMorning == true then
 			moveToGrass()
@@ -400,11 +402,12 @@ function morningPath()
 				moveToCell(fishingCellMorning[1], fishingCellMorning[2])
 			end
 		end
-	else pf.MoveTo(locationMorning)
+	else pf.moveTo(map, locationMorning)
 	end	
 end
 
 function dayPath()
+local map = getMapName()
 	if getMapName() == locationDay then
 		if grassDay == true then
 			moveToGrass()
@@ -419,11 +422,12 @@ function dayPath()
 				moveToCell(fishingCellDay[1], fishingCellDay[2])
 			end
 		end
-	else pf.MoveTo(locationDay)
+	else pf.moveTo(map, locationDay)
 	end	
 end
 
 function nightPath()
+local map = getMapName()
 	if getMapName() == locationNight then
 		if grassNight == true then
 			moveToGrass()
@@ -439,7 +443,7 @@ function nightPath()
 			end
 		end
 	else 
-		pf.MoveTo(locationNight)
+		pf.moveTo(map, locationNight)
 	end	
 end
 
@@ -526,6 +530,7 @@ function startBattle()
 end
 
 function onPathAction()
+local map = getMapName()
 usedRole = false
 roleMatched = false
 		
@@ -533,7 +538,7 @@ roleMatched = false
 		if isTeamUsable() then
 			goToPath()
 		else
-			pf.UseNearestPokecenter()
+			pf.useNearestPokecenter(map)
 		end
 	else
 		sortTeam()
