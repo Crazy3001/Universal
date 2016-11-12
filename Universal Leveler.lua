@@ -355,7 +355,7 @@ function onBattleAction()
 				end
 			elseif failedRun then
 				failedRun = false
-				return sendUsablePokemon() or attack()
+				return sendPokemon(getFirstUsablePokemon()) or sendPokemon(getFirstMaxLevelPokemon()) or sendUsablePokemon() or attack()
 			else
 				return attack() or sendPokemon(getFirstUsablePokemon()) or sendAnyPokemon() or run()
 			end
@@ -369,6 +369,6 @@ function onBattleAction()
 			end
 		end
 	else
-		return run() or sendPokemon(getFirstMaxLevelPokemon()) or sendAnyPokemon()
+		return run() or sendPokemon(getFirstUsablePokemon()) or sendPokemon(getFirstMaxLevelPokemon()) or sendAnyPokemon()
 	end
 end
