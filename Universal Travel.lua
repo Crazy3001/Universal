@@ -108,14 +108,8 @@ function onPathAction()
 local map = getMapName()
 	if goToNearestPokecenter == true then
 		pf.useNearestPokecenter(map)
-		if getMapName(goToNearestPokecenter) == getMapName() then
-			lib.log1time("Arrived at your Destination")
-		end
 	else
 		pf.moveTo(map, location)
-		if getMapName() == location then
-			lib.log1time("Arrived at your Destination")
-		end
 	end
 end
 
