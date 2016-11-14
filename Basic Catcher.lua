@@ -17,9 +17,6 @@ local catchNotCaught = true
 --Determines the percentage that the opponents health has to be to start throwing pokeballs. If using False Swipe, leave at 1.
 local throwHealth = 10
 --##########################################################################################
---Must be filled in. Determines what type of ball to use when catching, and what type to buy. Example: typeBall = "Pokeball"
-local typeBall = "Pokeball"
---##########################################################################################
 --If fishing, what type of rod to use. (Old Rod, Good Rod, Super Rod)
 local typeRod = "Super Rod"
 --##########################################################################################
@@ -27,6 +24,20 @@ local typeRod = "Super Rod"
 local useLeftovers = true
 --##########################################################################################
 
+
+				--#################################################--
+				-------------------GLOBAL SETTINGS-------------------
+				--#################################################--
+				
+				
+--Must be filled in. Determines what type of ball to use when catching, and what type to buy. Example: typeBall = "Pokeball"
+local typeBall = "Pokeball"
+--Set true if you want to buy your type of ball when you get low.
+local buyBalls = true
+--If buying balls, put in the amount of balls you want to have in your inventory.
+local buyBallAmount = 500
+--Will buy more balls when you type of ball reaches X.
+local buyBallsAt = 100
 
 
 				--#################################################--
@@ -43,7 +54,7 @@ local water = false
 local cave = false
 local fish = false 
 --If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
-local caveRectangle = {1,2,3,4}
+local caveRectangle = {1, 2, 3, 4}
 --If fishing, put in the cell number you want to fish {X,Y}
 local fishingCell = {1,2}
 		
@@ -71,7 +82,7 @@ local useSwipe = true
 --##########################################################################################
 --If using a Status Move, set true.
 --Status Move List - {"glare", "stun spore", "thunder wave", "hypnosis", "lovely kiss", "sing", "sleep spore", "spore"}
-local useStatus = true
+local useStatus = false
 
 
 				--#################################################--
@@ -369,14 +380,17 @@ end
 
 function isTeamUsable()
 	if useSync and not hasUsableSync(syncNature) then
+		log("######No Usable "..syncNature.." Sync Pokemon. Using Pokecenter.######")
 		return false
 		
 	
 	elseif useRole and not hasUsablePokemonWithMove("Role Play") then
+		log("######No Usable Pokemon With Role Play. Using Pokecenter.######")
 		return false
 	
 	
 	elseif useSwipe and not hasUsablePokemonWithMove("False Swipe") then
+		log("######No Usable Pokemon With False Swipe. Using Pokecenter.######")
 		return false
 	
 	else
@@ -427,57 +441,68 @@ function startRole()
 end
 
 function startBattle()
-	if getOpponentHealthPercent() > throwHealth then	
-		if useSwipe and hasUsablePokemonWithMove("False Swipe") then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
-				if useMove("False Swipe") then return end
-			else
-				if sendPokemon(hasUsablePokemonWithMove("False Swipe")) then return end
-			end
-		elseif useStatus and hasUsablePokemonWithMove(statusMove) then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
-				if getOpponentStatus() == "None" then
-					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
+	if isPokemonUsable(getActivePokemonNumber()) then
+		if getOpponentHealthPercent() > throwHealth then	
+			if useSwipe and hasUsablePokemonWithMove("False Swipe") then
+				if getActivePokemonNumber() == hasUsablePokemonWithMove("False Swipe") then
+					if useMove("False Swipe") then return end
 				else
-					if useItem(typeBall) then return end
+					if sendPokemon(hasUsablePokemonWithMove("False Swipe")) then return end
 				end
+			elseif useStatus and hasUsablePokemonWithMove(statusMove) then
+				if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
+					if getOpponentStatus() == "None" then
+						if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
+					else
+						if useItem(typeBall) then return end
+					end
+				else
+					if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
+				end
+
 			else
-				if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
+				if isPokemonUsable(getActivePokemonNumber()) then
+					if weakAttack() then return end
+				else
+					if sendUsablePokemon() or sendAnyPokemon() or run() then return end
+				end
 			end
 
 		else
-			if isPokemonUsable(getActivePokemonNumber()) then
-				if weakAttack() then return end
+			if useStatus and hasUsablePokemonWithMove(statusMove) then
+				if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
+					if getOpponentStatus() == "None" then
+						if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
+					else
+						if useItem(typeBall) then return end
+					end
+				else
+					if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
+				end
 			else
-				if sendUsablePokemon() or sendAnyPokemon() or run() then return end
+				if isPokemonUsable(getActivePokemonNumber()) then
+					if useItem(typeBall) then return end
+				else
+					if sendUsablePokemon() or sendAnyPokemon() or run() then return end
+				end
 			end
-		end
-
+		end	
 	else
-		if useStatus and hasUsablePokemonWithMove(statusMove) then
-			if getActivePokemonNumber() == hasUsablePokemonWithMove(statusMove)["id"] then
-				if getOpponentStatus() == "None" then
-					if useMove(hasPokemonWithMove(statusMove)["move"]) then return end
-				else
-					if useItem(typeBall) then return end
-				end
-			else
-				if sendPokemon(hasUsablePokemonWithMove(statusMove)["id"]) then return end
-			end
-		else
-			if isPokemonUsable(getActivePokemonNumber()) then
-				if useItem(typeBall) then return end
-			else
-				if sendUsablePokemon() or sendAnyPokemon() or run() then return end
-			end
-		end
-	end	
+		if sendUsablePokemon() or sendAnyPokemon() or run() then return end
+	end
 end
 
 function onPathAction()
 usedRole = false
 roleMatched = false
 local map = getMapName()
+local ballAmount = buyBallAmount - getItemQuantity(typeBall)
+
+	if buyBalls then
+		if getItemQuantity(typeBall) <= buyBallsAt then
+			return pf.useNearestPokemart(map, typeBall, ballAmount)
+		end
+	end
 
 	if useLeftovers then
 		if leftovers() then
