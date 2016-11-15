@@ -363,22 +363,27 @@ end
 function isTeamUsable()
 	
 	if isMorning() and not hasUsableSync(syncNatureMorning) then
+		log("You have no "..syncNatureMorning.." Sync Pokemon.")
 		return false
 	
 	
 	elseif isNoon() and not hasUsableSync(syncNatureDay) then
+		log("You have no "..syncNatureDay.." Sync Pokemon.")
 		return false
 	
 	
 	elseif isNight() and not hasUsableSync(syncNatureNight) then
+		log("You have no "..syncNatureNight.." Sync Pokemon.")
 		return false
 
 	
 	elseif useRole and not hasUsablePokemonWithMove("Role Play") then
+		log("You have no Pokemon with Role Play.")
 		return false
 	
 	
 	elseif useSwipe and not hasUsablePokemonWithMove("False Swipe") then
+		log("You have no Pokemon with False Swipe.")
 		return false
 	
 	else
