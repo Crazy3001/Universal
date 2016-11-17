@@ -408,10 +408,10 @@ local map = getMapName()
 		elseif cave then
 			if moveToRectangle(caveRectangle[1],caveRectangle[2],caveRectangle[3],caveRectangle[4]) then return end
 		elseif fish then
-			if isOnCell(fishCell[1],fishCell[2]) then
+			if isOnCell(fishingCell[1],fishingCell[2]) then
 				if useItem(typeRod) then return end
 			else
-				moveToCell(fishCell[1],fishCell[2])
+				moveToCell(fishingCell[1],fishingCell[2])
 			end
 		end
 	else pf.moveTo(map, location)
