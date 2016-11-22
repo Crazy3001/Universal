@@ -414,7 +414,7 @@ function onBattleAction()
 		end
 	end
 	if isWildBattle() and not isOnList(evadeThesePokemon) then
-		if getTotalUsablePokemonCount() < 1 and (getTotalPokemonToLevelCount() < 1 or (getTotalPokemonToLevelCount() == 1 and getPokemonHealthPercent(getFirstPokemonToLevel()) < healthToRunAt)) then
+		if getTotalUsablePokemonCount() < 1 or (getTotalPokemonToLevelCount() < 1 or (getTotalPokemonToLevelCount() == 1 and getPokemonHealthPercent(getFirstPokemonToLevel()) < healthToRunAt)) then
 			return run()
 		elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
 			if getTotalUsablePokemonCount() >= 1 then
