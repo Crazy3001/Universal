@@ -9,7 +9,7 @@ description = "Make sure your configuration is done properly. Press Start."
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatch = {"Clefairy"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
 local catchNotCaught = true
@@ -26,7 +26,7 @@ local useLeftovers = true
 
 
 				--#################################################--
-				-------------------GLOBAL SETTINGS-------------------
+				-------------------BALL SETTINGS-------------------
 				--#################################################--
 				
 				
@@ -36,7 +36,7 @@ local typeBall = "Pokeball"
 local buyBalls = true
 --If buying balls, put in the amount of balls you want to have in your inventory.
 local buyBallAmount = 500
---Will buy more balls when you type of ball reaches X.
+--Will buy more balls when your type of ball reaches X.
 local buyBallsAt = 100
 
 
@@ -46,17 +46,13 @@ local buyBallsAt = 100
 
 
 --Location you want to hunt. Example: location = "Dragons Den"
-local location = ""
+local location = "Dragons Den"
 --##########################################################################################
---Put only 1 true.
-local grass = true
-local water = false
-local cave = false
-local fish = false 
---If hunting in cave ground, put in your rectangle coordinates {X1,Y1,X2,Y2}
-local caveRectangle = {1, 2, 3, 4}
---If fishing, put in the cell number you want to fish {X,Y}
-local fishingCell = {1,2}
+-- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
+-- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
+local area = {35, 23, 57, 24, 23, 25, 24, 32}
+-- If you're using multiple rectangles, this is the amount of time in minutes that we'll stay in one rectangle before moving to a different one
+local minutesToMove = 4
 		
 		
 				--#################################################--
@@ -66,7 +62,7 @@ local fishingCell = {1,2}
 				
 --##########################################################################################
 --If using a Sync Pokemon, set true.
-local useSync = true
+local useSync = false
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
 local syncNature = ""
 --##########################################################################################
@@ -103,44 +99,20 @@ healCounter = 0
 shinyCounter = 0
 catchCounter = 0
 wildCounter = 0
-pokeFound = getTableValuesZero(pokemonToCatch)
-	log("###############################################################################################")
-	log("Pokedollars: "..getMoney())
-	log(typeBall.."s: "..tostring(getItemQuantity(typeBall)))
-	log("Hunting at "..location)
-	log("Catching:")
-	for _,value in pairs(pokemonToCatch) do
-		log(value)
-	end
-	if useSync then
-		log("Using "..syncNature.." Sync")
-	end
-	if useRole then
-		log("Using Role Play")
-		log("Pokemon to Role:")
-		for _,value in pairs(pokemonToRole) do
-			log(value)
-		end
-		log("Abilities to look for when using Role:")
-		for _,value in pairs(roleAbility) do
-			log(value)
-		end		
-	end
-	if useSwipe then
-		log("Using False Swipe")
-	end	
-	if useStatus then
-		log("Using Status Move")
-	end
+rand = 0 -- Used to represent each rectangle in area
+tmpRand = 0 -- Used to make sure rand is different every time we call math.random
+lineSwitch = false -- Used in moveToLine()
+rectTimer = os.time()
+
 	log("****************************************BOT STARTED*****************************************")
 end
 
 function onPause()
 	log("***********************************PAUSED - SESSION STATS***********************************")
     log("You have visited the PokeCenter " .. healCounter .. " times.")
-    log("Pokemon Encountered: " .. wildCounter)
-	log("Shinies Encountered: " .. shinyCounter)
-    log("Pokemon Caught: " .. catchCounter)
+	log("Info | Shineys encountered: " .. shinyCounter)
+	log("Info | Pokemon caught: " .. catchCounter)
+	log("Info | Pokemon encountered: " .. wildCounter)
     log("********************************************************************************************")
 end
 
@@ -177,14 +149,6 @@ function onBattleMessage(wild)
 		if stringContains(wild, "is now "..value) then
 			roleMatched = true
 			log("######ROLE ABILITY MATCHED!######")
-			break
-		end
-	end
-	found = false
-	for _,value in pairs(pokemonToCatch) do
-		if wild == "A Wild [FF9900]"..value.."[-] Attacks!" then
-			pokeFound[value] = pokeFound[value] + 1
-			found = true
 			break
 		end
 	end
@@ -398,21 +362,71 @@ function isTeamUsable()
 	end
 end
 
+function updateFishing(list)
+	-- Moves to a position and uses rod	
+	if getPlayerX() == list[1] and getPlayerY() == list[2] then
+		return useItem(typeRod)
+	else
+		return moveToCell(list[1], list[2])
+	end
+end
+
+function updateTargetRect(list)
+	-- Every minutesToMove minutes, picks a random integer between 1 and #list / 4 to get a number corresponding to each rectangle in list	
+	if os.difftime(os.time(), rectTimer) > minutesToMove * 60 or rand == 0 or rand > #list / 4 or rand == tmpRand then
+		rectTimer = os.time()
+		tmpRand = rand
+		rand = math.random(#list / 4)
+	end
+	
+	local n = (rand - 1) * 4
+	
+	if list[n + 1] == list[n + 3] or list[n + 2] == list[n + 4] then
+		return moveToLine({list[n + 1], list[n + 2], list[n + 3], list[n + 4]})
+	else
+		return moveToRectangle(list[n + 1], list[n + 2], list[n + 3], list[n + 4])
+	end
+end
+
+function moveToLine(list)	
+	-- Alternates between 2 positions	
+	if lineSwitch then
+		if getPlayerX() == list[1] and getPlayerY() == list[2] then
+			lineSwitch = not lineSwitch
+		else
+			return moveToCell(list[1], list[2])
+		end
+	else
+		if getPlayerX() == list[3] and getPlayerY() == list[4] then
+			lineSwitch = not lineSwitch
+		else
+			return moveToCell(list[3], list[4])
+		end
+	end
+end
+
 function goToPath()
 local map = getMapName()
+local location = location
 	if getMapName() == location then
-		if grass then
-			if moveToGrass() then return end
-		elseif water then
-			if moveToWater() then return end
-		elseif cave then
-			if moveToRectangle(caveRectangle[1],caveRectangle[2],caveRectangle[3],caveRectangle[4]) then return end
-		elseif fish then
-			if isOnCell(fishingCell[1],fishingCell[2]) then
-				if useItem(typeRod) then return end
+		if type(area) == "string" then
+			location = area:upper()
+		else
+			if #area == 2 then
+				return updateFishing(area)
+			elseif #area > 4 then
+				return updateTargetRect(area)
+			elseif area[1] == area[3] or area[2] == area[4] then
+				return moveToLine(area)
 			else
-				moveToCell(fishingCell[1],fishingCell[2])
+				return moveToRectangle(area[1], area[2], area[3], area[4])
 			end
+		end
+		
+		if location == "GRASS" then
+			return moveToGrass()
+		elseif location == "WATER" then
+			return moveToWater()
 		end
 	else pf.moveTo(map, location)
 	end	

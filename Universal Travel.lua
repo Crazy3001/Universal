@@ -31,11 +31,11 @@ description = "Press Start."
 
 local location = ""
 
+local catchNotCaught = false --set true if you want to catch pokemon not listed as caught in your pokedex
+
 local goToNearestPokecenter = false  --set true to use the nearest pokecenter
 
 local fight = false  --set true if you want to fight wild encounters on the way. false will run.
-
-local autoEvolve = "off"
 
 
 				--#################################################--
@@ -92,40 +92,45 @@ function onBattleMessage(wild)
        log("Info | Shinies Encountered: " .. shinyCounter)
        log("Info | Pokemon Caught: " .. catchCounter)
        log("Info | Pokemon Encountered: " .. wildCounter)
-	  end
-end
-
-function onBattleMessage(message)
-    if message == "You failed to run away!" then
+	elseif message == "You failed to run away!" then
         failedRun = true
-    end
-	if message == "You can not switch this Pokemon!" then
+	elseif message == "You can not switch this Pokemon!" then
 		canNotSwitch = true
     end
 end
 
+
 function onPathAction()
 local map = getMapName()
+canNotSwitch = false
+failedRun = false
 	if goToNearestPokecenter == true then
 		pf.useNearestPokecenter(map)
+		if getMapName(goToNearestPokecenter) == getMapName() then
+		end
 	else
 		pf.moveTo(map, location)
+		if getMapName() == location then
+		end
 	end
 end
 
 function onBattleAction()
-	if isWildBattle() and isOpponentShiny() then
+	if isWildBattle() and isOpponentShiny() or (catchNotCaught and not isAlreadyCaught()) then
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 			return
 		end
 	end
-	if isWildBattle() and isPokemonUsable(getTeamSize()) then
-		if fight then
-			return attack() or sendUsablePokemon() or run()
+	if isWildBattle() then 
+		if isPokemonUsable(getActivePokemonNumber()) then
+			if fight then
+				return attack() or sendUsablePokemon() or run()
+			else
+				return run()
+			end
 		else
-			return run()
+			return run() or sendUsablePokemon()
 		end
-		
 	elseif canNotSwitch then
 		canNotSwitch = false
 		return attack() or run()
