@@ -9,7 +9,7 @@ description = "Make sure your configuration is done properly. Press Start."
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatch = {"Clefairy"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
 local catchNotCaught = true
@@ -46,11 +46,11 @@ local buyBallsAt = 100
 
 
 --Location you want to hunt. Example: location = "Dragons Den"
-local location = "Dragons Den"
+local location = ""
 --##########################################################################################
 -- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
 -- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
-local area = {35, 23, 57, 24, 23, 25, 24, 32}
+local area = "Grass"
 -- If you're using multiple rectangles, this is the amount of time in minutes that we'll stay in one rectangle before moving to a different one
 local minutesToMove = 4
 		
@@ -74,7 +74,7 @@ local roleAbility = {""}
 local pokemonToRole = {""}
 --##########################################################################################
 --If using False Swipe, set true.
-local useSwipe = true
+local useSwipe = false
 --##########################################################################################
 --If using a Status Move, set true.
 --Status Move List - {"glare", "stun spore", "thunder wave", "hypnosis", "lovely kiss", "sing", "sleep spore", "spore"}
