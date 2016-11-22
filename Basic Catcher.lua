@@ -92,6 +92,7 @@ local useStatus = false
 				
 
 local pf = require "Pathfinder/MoveToApp"
+local Lib = require "Pathfinder/Lib/lib"
 local map = nil
 
 function onStart()
@@ -151,6 +152,15 @@ function onBattleMessage(wild)
 			log("######ROLE ABILITY MATCHED!######")
 			break
 		end
+	end
+end
+
+function onBattleMessage(message)
+    if message == "You failed to run away!" then
+        failedRun = true
+	end
+	if message == "You can not switch this Pokemon!" then
+		canNotSwitch = true
 	end
 end
 
@@ -509,6 +519,8 @@ end
 function onPathAction()
 usedRole = false
 roleMatched = false
+canNotSwitch = false
+failedRun = false
 local map = getMapName()
 local ballAmount = buyBallAmount - getItemQuantity(typeBall)
 
@@ -537,10 +549,40 @@ end
 
 function onBattleAction()
 	if isWildBattle() and isOnList(pokemonToRole) and useRole and hasUsablePokemonWithMove("Role Play") then
-		startRole()
+		if failedRun then
+			Lib.log1time("###Failed Run###")
+			failedRun = false
+			return sendAnyPokemon() or attack()
+		elseif canNotSwitch then
+			Lib.log1time("###Can Not Switch###")
+			canNotSwitch = false
+			return run() or attack()
+		else 
+			startRole()
+		end
 	elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatch) or (catchNotCaught and not isAlreadyCaught()) then
-		startBattle()
+		if failedRun then
+			Lib.log1time("###Failed Run###")
+			failedRun = false
+			return sendAnyPokemon() or attack()
+		elseif canNotSwitch then
+			Lib.log1time("###Can Not Switch###")
+			canNotSwitch = false
+			return run() or attack()
+		else 
+			startBattle()
+		end
 	else
-		return run() or sendUsablePokemon() 
+		if failedRun then
+			Lib.log1time("###Failed Run###")
+			failedRun = false
+			return attack() or sendAnyPokemon()
+		elseif canNotSwitch then
+			Lib.log1time("###Can Not Switch###")
+			canNotSwitch = false
+			return run() or attack()
+		else 
+			return run() or sendUsablePokemon() 
+		end
 	end
 end

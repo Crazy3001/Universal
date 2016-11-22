@@ -126,11 +126,16 @@ function onBattleMessage(wild)
        log("Info | Pokemon caught: " .. catchCounter)
        log("Info | Pokemon encountered: " .. wildCounter)
 	   log("*********************************************************************************************")
-    elseif wild == "You failed to run away!" then
-        failedRun = true
-	elseif wild == "You can not switch this Pokemon!" then
-		canNotSwitch = true
     end
+end
+
+function onBattleMessage(message)
+    if message == "You failed to run away!" then
+        failedRun = true
+	end
+	if message == "You can not switch this Pokemon!" then
+		canNotSwitch = true
+	end
 end
 
 function onLearningMove(moveName, pokemonIndex)
@@ -415,7 +420,15 @@ function onBattleAction()
 	end
 	if isWildBattle() and not isOnList(evadeThesePokemon) then
 		if getTotalUsablePokemonCount() < 1 or (getTotalPokemonToLevelCount() < 1 or (getTotalPokemonToLevelCount() == 1 and getPokemonHealthPercent(getFirstPokemonToLevel()) < healthToRunAt)) then
-			return run()
+			if isPokemonUsable(getActivePokemonNumber()) then
+				return run()
+			else
+				if getTotalUsablePokemonCount() >= 1 then
+					return sendPokemon(getFirstUsablePokemon()) 
+				else 
+					return sendAnyPokemon()
+				end
+			end
 		elseif getPokemonLevel(getActivePokemonNumber()) < minLevel then
 			if getTotalUsablePokemonCount() >= 1 then
 				return sendPokemon(getFirstUsablePokemon()) 
