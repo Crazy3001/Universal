@@ -12,7 +12,7 @@ description = "Make sure your configuration is done properly. Press Start."
 local pokemonToCatch = {""} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
-local catchNotCaught = true
+local catchNotCaught = false
 --##########################################################################################
 --Determines the percentage that the opponents health has to be to start throwing pokeballs. If using False Swipe, leave at 1.
 local throwHealth = 10
@@ -33,7 +33,7 @@ local useLeftovers = true
 --Must be filled in. Determines what type of ball to use when catching, and what type to buy. Example: typeBall = "Pokeball"
 local typeBall = "Pokeball"
 --Set true if you want to buy your type of ball when you get low.
-local buyBalls = true
+local buyBalls = false
 --If buying balls, put in the amount of balls you want to have in your inventory.
 local buyBallAmount = 500
 --Will buy more balls when your type of ball reaches X.
@@ -51,8 +51,9 @@ local location = ""
 -- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
 -- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
 local area = "Grass"
+
 -- If you're using multiple rectangles, this is the amount of time in minutes that we'll stay in one rectangle before moving to a different one
-local minutesToMove = 4
+local minutesToMove = 30
 		
 		
 				--#################################################--
@@ -153,13 +154,10 @@ function onBattleMessage(wild)
 			break
 		end
 	end
-end
-
-function onBattleMessage(message)
-    if message == "You failed to run away!" then
+	if wild == "You failed to run away!" then
         failedRun = true
 	end
-	if message == "You can not switch this Pokemon!" then
+	if wild == "You can not switch this Pokemon!" then
 		canNotSwitch = true
 	end
 end
@@ -420,7 +418,7 @@ local map = getMapName()
 local location = location
 	if getMapName() == location then
 		if type(area) == "string" then
-			location = area:upper()
+			area = area:upper()
 		else
 			if #area == 2 then
 				return updateFishing(area)
@@ -433,9 +431,9 @@ local location = location
 			end
 		end
 		
-		if location == "GRASS" then
+		if area == "GRASS" then
 			return moveToGrass()
-		elseif location == "WATER" then
+		elseif area == "WATER" then
 			return moveToWater()
 		end
 	else pf.moveTo(map, location)

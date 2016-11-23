@@ -22,7 +22,7 @@ local area = "Grass"
 local minutesToMove = 30
 
 --Will catch any Pokemon that is not registered as owned in your Pokedex.
-local catchNotCaught = true
+local catchNotCaught = false
 
 --the below is case-sensitive, add more moves by adding commas. example : catchThesePokemon = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}--
 --Even if you set all other capture variables to false, we'll still try to catch these/this pokemon--
@@ -126,16 +126,11 @@ function onBattleMessage(wild)
        log("Info | Pokemon caught: " .. catchCounter)
        log("Info | Pokemon encountered: " .. wildCounter)
 	   log("*********************************************************************************************")
-    end
-end
-
-function onBattleMessage(message)
-    if message == "You failed to run away!" then
-        failedRun = true
-	end
-	if message == "You can not switch this Pokemon!" then
+	elseif stringContains(wild, "You failed to run away") then
+		failedRun = true
+	elseif stringContains(wild, "You can not switch this Pokemon") then	
 		canNotSwitch = true
-	end
+    end
 end
 
 function onLearningMove(moveName, pokemonIndex)

@@ -19,7 +19,7 @@ description = "Press Start."
 --Pokecenter Azalea             --Pokecenter Ecruteak     --Pokecenter Violet City     --Ruins Of Alph
 --Pokecenter Blackthorn         --Pokecenter Goldenrod    --Dragons Den                --Ilex Forest
 --Pokecenter Cherrygrove City   --Pokecenter Mahogany     --Johto Safari Zone Lobby    
---Pokecenter Cianwood           --Olivine Pokecenter      --National Park       
+--Pokecenter Cianwood           --Olivine Pokecenter           
 --
 
 --HOENN
@@ -31,11 +31,16 @@ description = "Press Start."
 
 local location = ""
 
-local catchNotCaught = false --set true if you want to catch pokemon not listed as caught in your pokedex
-
-local goToNearestPokecenter = false  --set true to use the nearest pokecenter
+local catchNotCaught = 	false --set true if you want to catch pokemon not listed as caught in your pokedex
 
 local fight = false  --set true if you want to fight wild encounters on the way. false will run.
+
+local goToNearestPokecenter = 	false  --set true to use the nearest pokecenter
+
+local buyItem = false  --set true to use nearest pokemart that has the item below
+local item = "" -- put the item you want to buy here
+local amount = 1 -- put the amount of the item you want here
+
 
 
 				--#################################################--
@@ -99,14 +104,18 @@ function onBattleMessage(wild)
     end
 end
 
-
 function onPathAction()
 local map = getMapName()
 canNotSwitch = false
 failedRun = false
+
 	if goToNearestPokecenter == true then
 		pf.useNearestPokecenter(map)
 		if getMapName(goToNearestPokecenter) == getMapName() then
+		end
+	elseif buyItem then
+		if not pf.useNearestPokemart(map, item, amount) then
+			fatal("Finished Buying Item.")
 		end
 	else
 		pf.moveTo(map, location)
