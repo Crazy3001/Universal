@@ -442,7 +442,7 @@ local map = getMapName()
 local locationMorning = locationMorning
 	if getMapName() == locationMorning then
 		if type(areaMorning) == "string" then
-			locationMorning = areaMorning:upper()
+			areaMorning = areaMorning:upper()
 		else
 			if #areaMorning == 2 then
 				return updateFishing(areaMorning)
@@ -469,7 +469,7 @@ local map = getMapName()
 local locationDay = locationDay
 	if getMapName() == locationDay then
 		if type(areaDay) == "string" then
-			locationDay = areaDay:upper()
+			areaDay = areaDay:upper()
 		else
 			if #areaDay == 2 then
 				return updateFishing(areaDay)
@@ -496,7 +496,7 @@ local map = getMapName()
 local locationNight = locationNight
 	if getMapName() == locationNight then
 		if type(areaNight) == "string" then
-			locationNight = areaNight:upper()
+			areaNight = areaNight:upper()
 		else
 			if #areaNight == 2 then
 				return updateFishing(areaNight)
