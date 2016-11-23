@@ -455,9 +455,9 @@ local locationMorning = locationMorning
 			end
 		end
 		
-		if locationMorning == "GRASS" then
+		if areaMorning == "GRASS" then
 			return moveToGrass()
-		elseif locationMorning == "WATER" then
+		elseif areaMorning == "WATER" then
 			return moveToWater()
 		end
 	else pf.moveTo(map, locationMorning)
@@ -482,9 +482,9 @@ local locationDay = locationDay
 			end
 		end
 		
-		if locationDay == "GRASS" then
+		if areaDay == "GRASS" then
 			return moveToGrass()
-		elseif locationDay == "WATER" then
+		elseif areaDay == "WATER" then
 			return moveToWater()
 		end
 	else pf.moveTo(map, locationDay)
@@ -509,9 +509,9 @@ local locationNight = locationNight
 			end
 		end
 		
-		if locationNight == "GRASS" then
+		if areaNight == "GRASS" then
 			return moveToGrass()
-		elseif locationNight == "WATER" then
+		elseif areaNight == "WATER" then
 			return moveToWater()
 		end
 	else 
