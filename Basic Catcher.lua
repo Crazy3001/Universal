@@ -99,13 +99,6 @@ local map = nil
 function onStart()
 healCounter = 0
 shinyCounter = 0
-catchCounter = 0local pf = require "Pathfinder/MoveToApp"
-local Lib = require "Pathfinder/Lib/lib"
-local map = nil
-
-function onStart()
-healCounter = 0
-shinyCounter = 0
 catchCounter = 0
 wildCounter = 0
 rand = 0 -- Used to represent each rectangle in area
