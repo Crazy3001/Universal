@@ -125,6 +125,7 @@ end
 function onDialogMessage(message)
     if stringContains(message, "There you go, take care of them!") then
 		healCounter = healCounter + 1
+		safariOver = false
 		log("You have visited the PokeCenter ".. healCounter .." times.")
     end
 end
@@ -146,6 +147,10 @@ function onBattleMessage(wild)
 	    log("Info | Shineys encountered: " .. shinyCounter)
 	    log("Info | Pokemon caught: " .. catchCounter)
 	    log("Info | Pokemon encountered: " .. wildCounter)
+	elseif stringContains(wild, "You failed to run away") then
+		failedRun = true
+	elseif stringContains(wild, "You can not switch this Pokemon") then	
+		canNotSwitch = true
 	end
 	for _,value in pairs(roleAbility) do
 		if stringContains(wild, "is now "..value) then
@@ -153,12 +158,6 @@ function onBattleMessage(wild)
 			log("######ROLE ABILITY MATCHED!######")
 			break
 		end
-	end
-	if wild == "You failed to run away!" then
-        failedRun = true
-	end
-	if wild == "You can not switch this Pokemon!" then
-		canNotSwitch = true
 	end
 end
 
@@ -524,6 +523,7 @@ local ballAmount = buyBallAmount - getItemQuantity(typeBall)
 
 	if buyBalls then
 		if getItemQuantity(typeBall) <= buyBallsAt then
+			log("###Buying " .. ballAmount .. " " .. typeBall .. "s.###")
 			return pf.useNearestPokemart(map, typeBall, ballAmount)
 		end
 	end
@@ -533,54 +533,37 @@ local ballAmount = buyBallAmount - getItemQuantity(typeBall)
 			return true
 		end
 	end
-		
-	if isTeamSorted() then
-		if isTeamUsable() then
-			goToPath()
+
+	if not safariOver then	
+		if isTeamSorted() then
+			if isTeamUsable() then
+				goToPath()
+			else
+				pf.useNearestPokecenter(map)
+			end
 		else
-			pf.useNearestPokecenter(map)
+			sortTeam()
 		end
 	else
-		sortTeam()
-	end
+		log("###Safari Time Is Over, Using Pokecenter###")
+		pf.useNearestPokecenter(map)
+	end		
 end
 
 function onBattleAction()
 	if isWildBattle() and isOnList(pokemonToRole) and useRole and hasUsablePokemonWithMove("Role Play") then
-		if failedRun then
-			Lib.log1time("###Failed Run###")
-			failedRun = false
-			return sendAnyPokemon() or attack()
-		elseif canNotSwitch then
-			Lib.log1time("###Can Not Switch###")
-			canNotSwitch = false
-			return run() or attack()
-		else 
-			startRole()
-		end
+		startRole()
 	elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatch) or (catchNotCaught and not isAlreadyCaught()) then
-		if failedRun then
-			Lib.log1time("###Failed Run###")
-			failedRun = false
-			return sendAnyPokemon() or attack()
-		elseif canNotSwitch then
-			Lib.log1time("###Can Not Switch###")
-			canNotSwitch = false
-			return run() or attack()
-		else 
-			startBattle()
-		end
+		startBattle()
+	elseif failedRun then
+		log("###Failed Run###")
+		failedRun = false
+		return sendAnyPokemon() or attack()
+	elseif canNotSwitch then
+		log("###Can Not Switch###")
+		canNotSwitch = false
+		return run() or attack()
 	else
-		if failedRun then
-			Lib.log1time("###Failed Run###")
-			failedRun = false
-			return attack() or sendAnyPokemon()
-		elseif canNotSwitch then
-			Lib.log1time("###Can Not Switch###")
-			canNotSwitch = false
-			return run() or attack()
-		else 
-			return run() or sendUsablePokemon() 
-		end
+		return run() or sendUsablePokemon() 
 	end
 end

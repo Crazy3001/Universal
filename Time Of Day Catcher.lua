@@ -117,6 +117,7 @@ local syncNatureNight = ""
 				
 
 local pf = require "Pathfinder/MoveToApp"
+local Lib = require "Pathfinder/Lib/lib"
 local map = nil
 
 function onStart()
@@ -148,6 +149,7 @@ end
 function onDialogMessage(message)
    if stringContains(message, "There you go, take care of them!") then
         healCounter = healCounter + 1
+		safariOver = false
         log("You have visited the PokeCenter ".. healCounter .." times.")
    end
 end
@@ -169,6 +171,10 @@ function onBattleMessage(wild)
         log("Info | Shineys encountered: " .. shinyCounter)
         log("Info | Pokemon caught: " .. catchCounter)
         log("Info | Pokemon encountered: " .. wildCounter)
+	elseif stringContains(wild, "You failed to run away") then
+		failedRun = true
+	elseif stringContains(wild, "You can not switch this Pokemon") then	
+		canNotSwitch = true
     end
     for _,value in pairs(roleAbility) do
         if stringContains(wild, "is now "..value) then
@@ -177,6 +183,13 @@ function onBattleMessage(wild)
             break
         end
     end
+end
+
+function onSystemMessage(safari)
+local map = getMapName()
+	if stringContains(safari, "Your Safari Time is over!") then
+		safariOver = true
+	end
 end
 
 function TableLength(T)
@@ -648,13 +661,16 @@ function startBattle()
 end
 
 function onPathAction()
-local map = getMapName()
 usedRole = false
 roleMatched = false
+canNotSwitch = false
+failedRun = false
+local map = getMapName()
 local ballAmount = buyBallAmount - getItemQuantity(typeBall)
 
     if buyBalls then
         if getItemQuantity(typeBall) <= buyBallsAt then
+			log("###Buying " .. ballAmount .. " " .. typeBall .. "s.###")
             return pf.useNearestPokemart(map, typeBall, ballAmount)
         end
     end
@@ -664,16 +680,21 @@ local ballAmount = buyBallAmount - getItemQuantity(typeBall)
 			return true
 		end
 	end
-        
-    if isTeamSorted() then
-        if isTeamUsable() then
-            goToPath()
-        else
-            pf.useNearestPokecenter(map)
-        end
-    else
-        sortTeam()
-    end
+    
+	if not safariOver then
+		if isTeamSorted() then
+			if isTeamUsable() then
+				goToPath()
+			else
+				pf.useNearestPokecenter(map)
+			end
+		else
+			sortTeam()
+		end
+	else
+		log("###Safari Time Is Over, Using Pokecenter###")
+		pf.useNearestPokecenter(map)
+	end
 end
 
 function onBattleAction()
@@ -683,6 +704,14 @@ function onBattleAction()
             startRole()
         elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatchMorning) or (catchNotCaught and not isAlreadyCaught()) or (hasUsablePokemonWithMove("Role Play") and isOnList(pokemonToRole)) then
             startBattle()
+		elseif failedRun then
+			log("###Failed Run###")
+			failedRun = false
+			return sendAnyPokemon() or attack()
+		elseif canNotSwitch then
+			log("###Can Not Switch###")
+			canNotSwitch = false
+			return run() or attack()
         else
             return run() or sendUsablePokemon() 
         end
@@ -693,6 +722,14 @@ function onBattleAction()
             startRole()
         elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatchDay) or (catchNotCaught and not isAlreadyCaught()) or (hasUsablePokemonWithMove("Role Play") and isOnList(pokemonToRole)) then
             startBattle()
+		elseif failedRun then
+			log("###Failed Run###")
+			failedRun = false
+			return sendAnyPokemon() or attack()
+		elseif canNotSwitch then
+			log("###Can Not Switch###")
+			canNotSwitch = false
+			return run() or attack()
         else
             return run() or sendUsablePokemon() 
         end
@@ -703,6 +740,14 @@ function onBattleAction()
             startRole()
         elseif isWildBattle() and isOpponentShiny() or isOnList(pokemonToCatchNight) or (catchNotCaught and not isAlreadyCaught()) or (hasUsablePokemonWithMove("Role Play") and isOnList(pokemonToRole)) then
             startBattle()
+		elseif failedRun then
+			log("###Failed Run###")
+			failedRun = false
+			return sendAnyPokemon() or attack()
+		elseif canNotSwitch then
+			log("###Can Not Switch###")
+			canNotSwitch = false
+			return run() or attack()
         else
             return run() or sendUsablePokemon() 
         end
