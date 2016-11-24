@@ -1,8 +1,9 @@
 name = "Time of Day Catcher"
 author = "Crazy3001"
 description = [["Catches the following using False Swipe:
-Togepi at Morning and Day at Moon with Timid Sync, 
-Gible at Night at Moon with Jolly Sync. Press Start."]]
+Charmader at Night at Cinnabar Mansion 3 with Timid Sync, 
+Bulbasaur at Morning at Safari Area 2 with Bold Sync,
+Squirtle at Day at Vermilion City using Bold Sync. Press Start."]]
 
 
 				--#################################################--
@@ -57,20 +58,17 @@ local buyBallsAt = 100
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatchMorning = {"Togepi"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatchMorning = {"Bulbasaur"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --Location you want to hunt. Example: location = "Dragons Den"
-local locationMorning = "Moon"
+local locationMorning = "Safari Area 2"
 -- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
 -- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
-local areaMorning = {12, 32, 16, 33, 
-					 24, 36, 26, 39, 
-					 8, 39, 11, 41, 
-					 12, 46, 18, 48}
+local areaMorning = "Grass"	
 --##########################################################################################
 local useSyncMorning = true
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNatureMorning = "Timid"
+local syncNatureMorning = "Bold"
 
 
 				--#################################################--
@@ -79,20 +77,17 @@ local syncNatureMorning = "Timid"
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatchDay = {"Togepi"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatchDay = {"Squirtle"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --Location you want to hunt. Example: location = "Dragons Den"
-local locationDay = "Moon"
+local locationDay = "Vermilion City"
 -- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
 -- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
-local areaDay = {12, 32, 16, 33, 
-				 24, 36, 26, 39, 
-				 8, 39, 11, 41, 
-				 12, 46, 18, 48}
+local areaDay = "Water"	
 --##########################################################################################
 local useSyncDay = true
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNatureDay = "Timid"
+local syncNatureDay = "Bold"
 
 
 				--#################################################--
@@ -101,20 +96,17 @@ local syncNatureDay = "Timid"
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatchNight = {"Gible"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatchNight = {"Charmander"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --Location you want to hunt. Example: location = "Dragons Den"
-local locationNight = "Moon"
+local locationNight = "Cinnabar mansion 3"
 -- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
 -- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
-local areaNight = {12, 32, 16, 33, 
-				   24, 36, 26, 39, 
-				   8, 39, 11, 41, 
-				   12, 46, 18, 48}
+local areaNight = {1,10,14,25}	
 --##########################################################################################
 local useSyncNight = true
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
-local syncNatureNight = "Jolly"
+local syncNatureNight = "Timid"
 
 
 				--#################################################--
