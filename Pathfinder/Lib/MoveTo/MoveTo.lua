@@ -13,7 +13,7 @@ local _ss                 = require (cpppdpath .. "Settings/Static_Settings")
 local _globalMap          = require (cppdpath .. "Maps/GlobalMap")
 local subMaps             = require (cppdpath .. "Maps/MapExceptions/SubstituteMaps")
 local linkExceptions      = require (cppdpath .. "Maps/MapExceptions/LinkExceptions")
-local _npcExceptions       = require (cppdpath .. "Maps/MapExceptions/NpcExceptions")
+local _npcExceptions      = require (cppdpath .. "Maps/MapExceptions/NpcExceptions")
 local digways             = require (cppdpath .. "Maps/MapExceptions/Digways")
 local dialogSolver        = require (cppdpath .. "Lib/MoveTo/DialogSolver")
 local elevatorExceptions  = require (cppdpath .. "Maps/MapExceptions/Elevators")
@@ -418,7 +418,6 @@ local function onPathfinderDialogMessage(message)
     pfData.toMap = toMap
     pfData.abilitiesIndex = settings.abilitiesIndex
     dialogSolver.solveDialog(message, pfData)
-    if stringContains(message, "What's up? Do you want to go back to   ") then resetPath() end
 end
 
 local function onPathfinderSystemMessage(message)

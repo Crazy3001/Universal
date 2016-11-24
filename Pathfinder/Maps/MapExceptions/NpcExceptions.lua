@@ -252,6 +252,7 @@ npcExce["Vermilion City_A"] = {
     ["Three Island Ferry"] = {{38, 60}, "Three Island", "Ahoy there, Where would you like to sail?"},
     ["Four Island Ferry"] = {{38, 60}, "Four Island", "Ahoy there, Where would you like to sail?"},
     ["Five Island Ferry"] = {{38, 60}, "Five Island", "Ahoy there, Where would you like to sail?"},
+	["Six Island Ferry"] = {{38, 60}, "Other Islands", "Ahoy there, Where would you like to sail?", "Six Island", ""},
     ["Lilycove City Harbor"] = {{40, 68}, "Yes", "The cost for a cruise to Lilycove City is $5,000. Are you sure you want to go to Lilycove City?"},
     ["Love Island Ferry"] = {{53, 62}, "Yes", "Hey there, young trainer. What do you know about looove? Yeah, you hear me, Love, Love, Love, Love! You want to find out more about love? Why don't you show me that you looove Kanto Pokemon? ........ Well, well, you do look like you loooooove Kanto Pokemon. What do you say? Want to sail with me to Love Island? But you need to share $5,000 of your looooove too."},
     ["Vulcan Island shore"] = {{62, 58}, "Yes", "Happy summer Holiday! Do you want to sail with me to Vulcan Island?"}

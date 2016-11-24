@@ -5,7 +5,7 @@ local cppdpath = nTimes(3, rmlast, cpath) -- callee parent of parent dir path
 
 local Maybe                 = require (cppdpath .. "Lib/Maybe")
 local Lib                   = require (cppdpath .. "Lib/Lib")
-local npcExceptions         = require (cppdpath .. "Maps/MapExceptions/NpcExceptions")
+local _npcExceptions        = require (cppdpath .. "Maps/MapExceptions/NpcExceptions")
 local elevators             = require (cppdpath .. "Maps/MapExceptions/Elevators")
 local digways               = require (cppdpath .. "Maps/MapExceptions/Digways")
 local transmats             = require (cppdpath .. "Maps/MapExceptions/Transmats")
@@ -27,6 +27,11 @@ local function solveNpc(message, n1, n2)
         pushDialogAnswer(npcExce[2])
         log("Pathfinder: Pushing dialog: " .. npcExce[2])
     end
+	if message == npcExce[4] then
+        pushDialogAnswer(npcExce[3])
+        log("Pathfinder: Pushing dialog: " .. npcExce[3])
+    end	
+		
 end
 
 local function solveElevator(message, n1, n2)
@@ -150,5 +155,11 @@ local function solveDialog(message, pf)
         return solveTransmatReached(message, n2)
     end
 end
+ 
+local function onDialogSolverStart()
+    npcExceptions = _npcExceptions
+end
+ 
+registerHook("onStart", onDialogSolverStart)
 
 return { solveDialog = solveDialog }
