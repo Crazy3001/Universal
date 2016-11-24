@@ -260,7 +260,7 @@ function hasUsableSync(Nature)
            return i, true
        end
    end
-   return 0, false
+   return false
 end
 
 function hasSync(Nature)
@@ -269,7 +269,7 @@ function hasSync(Nature)
            return i, true
        end
    end
-   return 0, false
+   return false
 end
 
 function sortTeam()
@@ -390,6 +390,52 @@ function isTeamUsable()
     else
         return true
     end
+end
+
+
+function getFirstUsablePokemon()
+	for i=1, getTeamSize(), 1 do
+		if isPokemonUsable(i) then
+			return i
+		end
+	end
+	return 0
+end
+
+function getPokemonIdWithItem(ItemName)	
+	for i=1, getTeamSize(), 1 do
+		if getPokemonHeldItem(i) == ItemName then
+			return i
+		end
+	end
+	return 0
+end
+
+function leftovers()
+	ItemName = "Leftovers"
+	local PokemonNeedLeftovers = getFirstUsablePokemon()
+	local PokemonWithLeftovers = getPokemonIdWithItem(ItemName)
+	
+	if getTeamSize() > 0 then
+		if PokemonWithLeftovers > 0 then
+			if PokemonNeedLeftovers == PokemonWithLeftovers  then
+				return false -- now leftovers is on rightpokemon
+			else
+				takeItemFromPokemon(PokemonWithLeftovers)
+				return true
+			end
+		else
+
+			if hasItem(ItemName) and PokemonNeedLeftovers ~= 0 then
+				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
+				return true
+			else
+				return false
+			end
+		end
+	else
+		return false
+	end
 end
 
 function updateFishing(list)
@@ -612,6 +658,12 @@ local ballAmount = buyBallAmount - getItemQuantity(typeBall)
             return pf.useNearestPokemart(map, typeBall, ballAmount)
         end
     end
+	
+	if leftovers then
+		if leftovers() then
+			return true
+		end
+	end
         
     if isTeamSorted() then
         if isTeamUsable() then
