@@ -102,7 +102,7 @@ local pokemonToCatchNight = {"Charmander"} --If you have a pokemonToRole, don't 
 local locationNight = "Cinnabar mansion 3"
 -- Put "Grass" for grass, "Water" for water, {x, y} for fishing cell, {x1, y1, x2, y2} for rectangle
 -- If you're using a rectangle, you can set more rectangles to hunt in just by adding 4 more parameters. Example: local area = {x1, y1, x2, y2, x1, y1, x2, y2}
-local areaNight = {1,3,37,25}	
+local areaNight = {1,3,37,18}	
 --##########################################################################################
 local useSyncNight = true
 --Put in the nature of your All Day Sync Pokemon. Example: syncNature = "Adamant"
