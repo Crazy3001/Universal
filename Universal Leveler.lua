@@ -538,10 +538,10 @@ failedRun = false
 	
 	if not allPokemonReachedTargetLevel() then
 		if getTotalUsablePokemonCount() >= 1 and getTotalAlivePokemonCount() >= keepAlive and (getTotalPokemonToLevelCount() > 1 or (getTotalPokemonToLevelCount() == 1 and getPokemonHealthPercent(getFirstPokemonToLevel()) >= healthToRunAt)) then
-			if isOnLocationList(location) then
+			if map == location then
 				goToArea()
 			else
-				updateLocation(location)
+				pf.moveTo(map, location)
 			end			
 		else
 			pf.useNearestPokecenter(map)
