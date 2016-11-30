@@ -537,7 +537,7 @@ failedRun = false
 	end
 	
 	if not allPokemonReachedTargetLevel() then
-		if getTotalUsablePokemonCount() >= 1 and getTotalAlivePokemonCount() >= keepAlive and (getTotalPokemonToLevelCount() > 1 or (getTotalPokemonToLevelCount() == 1 and getPokemonHealthPercent(getFirstPokemonToLevel()) >= healthToRunAt)) then
+		if getTotalUsablePokemonCount() >= 1 and getTotalAlivePokemonCount() > keepAlive and (getTotalPokemonToLevelCount() > 1 or (getTotalPokemonToLevelCount() == 1 and getPokemonHealthPercent(getFirstPokemonToLevel()) >= healthToRunAt)) then
 			if map == location then
 				goToArea()
 			else
