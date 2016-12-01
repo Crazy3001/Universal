@@ -287,16 +287,18 @@ function moveToLine(list)
 end
 
 function hasRemainingPP(i)
-	for m=1, 4, 1 do
-		if getPokemonMovePower(i,m) >= 1 then
-			p = getPokemonMoveName(i,m)
-			if getRemainingPowerPoints(i,p) >= 1 then
-				return true
-			end
-		end
-	end
-	Lib.log1time("######No More PP, Using Pokecenter######")
-	return false
+    for m=1, 4, 1 do
+        if getPokemonMoveName(i, m) then
+            if getPokemonMovePower(i,m) >= 1 then
+                p = getPokemonMoveName(i,m)
+                if getRemainingPowerPoints(i,p) >= 1 then
+                    return true
+                end
+            end
+        end
+    end
+    Lib.log1time("######No More PP, Using Pokecenter######")
+    return false
 end
 
 function getFirstUsablePokemon()
