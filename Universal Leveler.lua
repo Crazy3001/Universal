@@ -264,16 +264,18 @@ function moveToLine(list)
 end
 
 function hasRemainingPP(i)
-	for m=1, 4, 1 do
-		if getPokemonMovePower(i,m) >= 1 then
-			p = getPokemonMoveName(i,m)
-			if getRemainingPowerPoints(i,p) >= 1 then
-				return true
-			end
-		end
-	end
-	Lib.log1time("######No More PP, Using Pokecenter######")
-	return false
+    for m=1, 4, 1 do
+        if getPokemonMoveName(i, m) then
+            if getPokemonMovePower(i,m) >= 1 then
+                p = getPokemonMoveName(i,m)
+                if getRemainingPowerPoints(i,p) >= 1 then
+                    return true
+                end
+            end
+        end
+    end
+    Lib.log1time("######No More PP, Using Pokecenter######")
+    return false
 end
 
 function getFirstUsablePokemon()
@@ -282,7 +284,7 @@ function getFirstUsablePokemon()
 			return i		
 		end
 	end
-	Lib.log1time("######No More Usable Pokemon, Using Pokecenter######")
+	Lib.log1time("E01 | ######No More Usable Pokemon, Using Pokecenter######")
 	return 0
 end
 
@@ -294,7 +296,7 @@ function getTotalUsablePokemonCount()
 		end
 	end
 	if count == 0 then
-		Lib.log1time("######No More Usable Pokemon, Using Pokecenter######")
+		Lib.log1time("E02 | ######No More Usable Pokemon, Using Pokecenter######")
 	end
 	return count
 end
@@ -324,7 +326,7 @@ function getFirstPokemonToLevel()
 			return i		
 		end
 	end
-	Lib.log1time("######No More Pokemon To Level Alive, Using Pokecenter######")
+	Lib.log1time("E03 | ######No More Pokemon To Level Alive, Using Pokecenter######")
 	return 0
 end
 
@@ -336,7 +338,7 @@ function getTotalPokemonToLevelCount()
 		end
 	end
 	if count == 0 then
-		Lib.log1time("######No More Pokemon To Level Alive, Using Pokecenter######")
+		Lib.log1time("E04 | ######No More Pokemon To Level Alive, Using Pokecenter######")
 	end
 	return count
 end
