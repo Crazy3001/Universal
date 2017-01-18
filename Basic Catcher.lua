@@ -9,7 +9,7 @@ description = "Make sure your configuration is done properly. Press Start."
 
 				
 --Put in the pokemon you want to catch. Leave "" if none. Example: pokemonToCatch = {"Pokemon 1", "Pokemon 2", "Pokemon 3"}
-local pokemonToCatch = {"Pokemon 3"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
+local pokemonToCatch = {"Magikarp"} --If you have a pokemonToRole, don't put them here too, unless you want to catch that pokemon with any ability.
 --##########################################################################################
 --If you want to catch Pokemon that are not registered as caught in your Pokedex, set true.
 local catchNotCaught = false
